@@ -1,8 +1,8 @@
-# clear the data
+-- clear the data
 drop table if exists entries;
 drop table if exists users;
 
-# creating tables
+-- creating tables
 create table entries (
   id integer primary key autoincrement,
   title text not null,
@@ -17,5 +17,5 @@ create table users (
   password text not null
 );
 
-# init data
-insert into users VALUES ('admin', 'administrator', 'cospelthetraceur@gmail.com', 'admin')
+-- init data
+insert into users (login, fullname, email, password) VALUES ('admin', 'administrator', 'cospelthetraceur@gmail.com', 'admin')

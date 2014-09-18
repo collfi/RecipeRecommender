@@ -14,8 +14,8 @@ PASSWORD = 'default'
 app = Flask(__name__)
 app.config.from_object(__name__)
 
-
 # db
+############
 def connect_db():
   return sqlite3.connect(app.config['DATABASE'])
 
@@ -35,8 +35,14 @@ def teardown_request(exception):
   if db is not None:
     db.close()
 
+# misc functions
+############
+def check_session():
+  if not session.get('logged_in'):
+    abort(401)
 
 # routing the application
+############
 @app.route('/')
 def show_entries():
   cur = g.db.execute('select title, text from entries order by id desc')
@@ -45,8 +51,7 @@ def show_entries():
 
 @app.route('/add', methods=['POST'])
 def add_entry():
-  if not session.get('logged_in'):
-    abort(401)
+  check_session()
   g.db.execute('insert into entries (title, text) values (?, ?)',
     [request.form['title'], request.form['text']])
   g.db.commit()
@@ -57,14 +62,14 @@ def add_entry():
 def login():
   error = None
   if request.method == 'POST':
-    if request.form['username'] != app.config['USERNAME']:
-      error = 'Invalid username'
-    elif request.form['password'] != app.config['PASSWORD']:
-      error = 'Invalid password'
-    else:
+    cur = g.db.execute("select * from users where login = '{0}' and password = '{1}'".format(request.form['login'],request.form['password']))
+    result = cur.fetchone()
+    if result:
       session['logged_in'] = True
       flash('You were logged in')
       return redirect(url_for('show_entries'))
+    else:
+      error = 'Invalid username or password'
   return render_template('login.html', error=error)
 
 @app.route('/logout')
@@ -73,9 +78,21 @@ def logout():
   flash('You were logged out')
   return redirect(url_for('show_entries'))
 
+@app.route('/signup', methods=['GET','POST'])
+def signup():
+  error = None
+  if request.method == 'POST':
+    g.db.execute("insert into users (login, fullname, email, password) VALUES ('{0}', '{1}', '{2}', '{3}')".format(
+      request.form['login'],request.form['fullname'],request.form['email'],request.form['password']))
+    g.db.commit()
+    return redirect(url_for('login'))
+  return render_template('signup.html', error=error)
 
+def init_route():
+  pass
 
-
+# START
 if __name__ == '__main__':
   init_db()
+  init_route()
   app.run()
