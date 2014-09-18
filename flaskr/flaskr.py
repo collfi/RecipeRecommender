@@ -25,21 +25,19 @@ def init_db():
       db.cursor().executescript(f.read())
     db.commit()
 
+# requests
+#############
 @app.before_request
 def before_request():
   g.db = connect_db()
+  if 'logged_in' not in session and (request.endpoint != 'login' and request.endpoint != 'signup'):
+    return redirect(url_for('login'))
 
 @app.teardown_request
 def teardown_request(exception):
   db = getattr(g, 'db', None)
   if db is not None:
     db.close()
-
-# misc functions
-############
-def check_session():
-  if not session.get('logged_in'):
-    abort(401)
 
 # routing the application
 ############
@@ -51,7 +49,6 @@ def show_entries():
 
 @app.route('/add', methods=['POST'])
 def add_entry():
-  check_session()
   g.db.execute('insert into entries (title, text) values (?, ?)',
     [request.form['title'], request.form['text']])
   g.db.commit()
@@ -82,10 +79,14 @@ def logout():
 def signup():
   error = None
   if request.method == 'POST':
-    g.db.execute("insert into users (login, fullname, email, password) VALUES ('{0}', '{1}', '{2}', '{3}')".format(
-      request.form['login'],request.form['fullname'],request.form['email'],request.form['password']))
-    g.db.commit()
-    return redirect(url_for('login'))
+    try:
+      cur = g.db.execute("insert into users (login, fullname, email, password) VALUES ('{0}', '{1}', '{2}', '{3}')".format(
+        request.form['login'],request.form['fullname'],request.form['email'],request.form['password']))
+      g.db.commit()
+      return redirect(url_for('login'))
+    except Exception, e:
+      error = "User already exists!"
+      return render_template('signup.html', error=error)
   return render_template('signup.html', error=error)
 
 def init_route():

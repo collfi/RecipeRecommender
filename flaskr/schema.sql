@@ -10,8 +10,7 @@ create table entries (
 );
 
 create table users (
-  id integer primary key autoincrement,
-  login text not null,
+  login text primary key,
   fullname text not null,
   email text not null,
   password text not null
