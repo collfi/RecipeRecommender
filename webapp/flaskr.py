@@ -94,10 +94,9 @@ def signup():
   return render_template('signup.html', error=error)
 
 def init_route():
-  pass
+  init_db()
 
 # START
 if __name__ == '__main__':
-  init_db()
   init_route()
   app.run()
