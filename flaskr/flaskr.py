@@ -1,5 +1,6 @@
 # all the imports
 import sqlite3
+from mongokit import Connection, Document
 from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
 from contextlib import closing
 
@@ -10,26 +11,35 @@ SECRET_KEY = 'dev key'
 USERNAME = 'admin'
 PASSWORD = 'default'
 
+# create our mongodb connection
+mconnection = connec
+
 # create our recsys app
 app = Flask(__name__)
 app.config.from_object(__name__)
 
 # db
 ############
-def connect_db():
+def connect_sqlitedb():
   return sqlite3.connect(app.config['DATABASE'])
 
 def init_db():
-  with closing(connect_db()) as db:
+  with closing(connect_sqlitedb()) as db:
     with app.open_resource('schema.sql', mode='r') as f:
       db.cursor().executescript(f.read())
     db.commit()
+
+def connect_mongodb():
+  return MongoClient()
+
+def init_mongodb():
+  return "1";
 
 # requests
 #############
 @app.before_request
 def before_request():
-  g.db = connect_db()
+  g.db = connect_sqlitedb()
   if 'logged_in' not in session and (request.endpoint != 'login' and request.endpoint != 'signup'):
     return redirect(url_for('login'))
 
