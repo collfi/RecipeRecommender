@@ -10,10 +10,10 @@ def max_length(length):
 class User(Document):
   structure = {
     'login' : unicode,
-    'rating' : { "itemid" : int, "value" : float, "date_creation" : datetime.datetime }
+    'rating' : ["itemid" : int, "value" : float, "date_creation" : datetime.datetime ],
   }
   validators = {
-    'login' : 
+    'login' : max_length(50)
   }
   use_dot_notation = True
   required_fields = ['login']

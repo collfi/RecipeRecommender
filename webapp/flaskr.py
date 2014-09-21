@@ -12,7 +12,7 @@ USERNAME = 'admin'
 PASSWORD = 'default'
 
 # create our mongodb connection
-mconnection = connec
+mconnection = Connection()
 
 # create our recsys app
 app = Flask(__name__)
@@ -28,12 +28,6 @@ def init_db():
     with app.open_resource('schema.sql', mode='r') as f:
       db.cursor().executescript(f.read())
     db.commit()
-
-def connect_mongodb():
-  return MongoClient()
-
-def init_mongodb():
-  return "1";
 
 # requests
 #############
