@@ -6,7 +6,9 @@ drop table if exists users;
 create table entries (
   id integer primary key autoincrement,
   title text not null,
-  text text not null
+  text text not null,
+  city text not null,
+  address text not null,
 );
 
 create table users (

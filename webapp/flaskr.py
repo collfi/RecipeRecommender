@@ -4,19 +4,15 @@ from mongokit import Connection, Document
 from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
 from contextlib import closing
 
-# configuration
-DATABASE = '/tmp/flaskr.db'
-DEBUG = True
-SECRET_KEY = 'dev key'
-USERNAME = 'admin'
-PASSWORD = 'default'
+from models import recommender
 
-# create our mongodb connection
+# create our mongodb connection and register models
 mconnection = Connection()
+mconnection.register([recommender.User])
 
 # create our recsys app
 app = Flask(__name__)
-app.config.from_object(__name__)
+app.config.from_object('config.Config')
 
 # db
 ############
