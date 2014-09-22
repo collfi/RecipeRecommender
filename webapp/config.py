@@ -8,7 +8,7 @@ class Config(object):
   TESTING = False
 
 class ProductionConfig(Config):
-  DATABASE_URI = '/tmp/flaskr.db'
+  DATABASE = '/tmp/flaskr.db'
   DEBUG = False
 
 class DevelopmentConfig(Config):

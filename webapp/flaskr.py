@@ -1,57 +1,56 @@
+# The recommender system
+# authors : Michal Lukac, Boris Valentovic
+
 # all the imports
 import sqlite3
-from mongokit import Connection, Document
-from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
-from contextlib import closing
+from mongokit import Connection
+from flask import Flask, request, session, g, redirect, url_for, render_template, flash
 
 from models import recommender
+from models.database import db_session, init_db
+from models.models import User
 
 # create our mongodb connection and register models
 mconnection = Connection()
 mconnection.register([recommender.User])
+userscol = mconnection['recsys'].users
 
 # create our recsys app
 app = Flask(__name__)
 app.config.from_object('config.Config')
 
-# db
-############
+# all the db functions
 def connect_sqlitedb():
   return sqlite3.connect(app.config['DATABASE'])
 
-def init_db():
-  with closing(connect_sqlitedb()) as db:
-    with app.open_resource('schema.sql', mode='r') as f:
-      db.cursor().executescript(f.read())
-    db.commit()
+def init_mongodb():
+  recommender.init_mongodb(mconnection)
 
 # requests
 #############
+@app.teardown_appcontext
+def shutdown_session(exception=None):
+    db_session.remove()
+
 @app.before_request
 def before_request():
-  g.db = connect_sqlitedb()
   if 'logged_in' not in session and (request.endpoint != 'login' and request.endpoint != 'signup'):
     return redirect(url_for('login'))
-
-@app.teardown_request
-def teardown_request(exception):
-  db = getattr(g, 'db', None)
-  if db is not None:
-    db.close()
 
 # routing the application
 ############
 @app.route('/')
 def show_entries():
-  cur = g.db.execute('select title, text from entries order by id desc')
-  entries = [dict(title=row[0], text=row[1]) for row in cur.fetchall()]
+  #cur = g.db.execute('select title, text from entries order by id desc')
+  #entries = [dict(title=row[0], text=row[1]) for row in cur.fetchall()]
+  entries = None
   return render_template('show_entries.html', entries=entries)
 
 @app.route('/add', methods=['POST'])
 def add_entry():
-  g.db.execute('insert into entries (title, text) values (?, ?)',
-    [request.form['title'], request.form['text']])
-  g.db.commit()
+  #g.db.execute('insert into entries (title, text) values (?, ?)',
+  #  [request.form['title'], request.form['text']])
+  #g.db.commit()
   flash('New entry was successfully posted')
   return redirect(url_for('show_entries'))
 
@@ -59,8 +58,7 @@ def add_entry():
 def login():
   error = None
   if request.method == 'POST':
-    cur = g.db.execute("select * from users where login = '{0}' and password = '{1}'".format(request.form['login'],request.form['password']))
-    result = cur.fetchone()
+    result = User.query.filter(User.login == 'admin').first()
     if result:
       session['logged_in'] = True
       flash('You were logged in')
@@ -80,9 +78,14 @@ def signup():
   error = None
   if request.method == 'POST':
     try:
-      cur = g.db.execute("insert into users (login, fullname, email, password) VALUES ('{0}', '{1}', '{2}', '{3}')".format(
-        request.form['login'],request.form['fullname'],request.form['email'],request.form['password']))
-      g.db.commit()
+      # save to sqldb
+      user = User('admin', 'admin', 'cospelthetraceur@gmail.com','admin')
+      db_session.add(user)
+      db_session.commit()
+      # and save to nosql
+      user = userscol.User()
+      user['_id'] = request.form['login']
+      user.save()
       return redirect(url_for('login'))
     except Exception, e:
       error = "User already exists!"
@@ -90,7 +93,10 @@ def signup():
   return render_template('signup.html', error=error)
 
 def init_route():
+  # sql
   init_db()
+  # mongo
+  init_mongodb()
 
 # START
 if __name__ == '__main__':
