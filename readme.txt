@@ -2,6 +2,8 @@ This is just project.
 
 todo:
 collfi:
+prestuduj flask, sqlalchemy, (mongodb uz asi nemusis zatial ...)
+
 1. samostatna stranka pre pridavanie receptu
    recept musi mat taktiez tagy
 
