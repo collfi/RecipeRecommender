@@ -13,6 +13,7 @@ git add ....
 git rm ....
 git commit
 git push origin master
+git pull // zobranie zo serveru
 
 cospel:
 -- do nedele volno
