@@ -13,7 +13,7 @@ def init_db():
     # import all modules here that might define models so that
     # they will be registered properly on the metadata.  Otherwise
     # you will have to import them first before calling init_db()
-    from models import User
+    from models import User, Recipe
     Base.metadata.drop_all(bind=engine)
     Base.metadata.create_all(bind=engine)
     user = User('admin', 'admin', 'cospelthetraceur@gmail.com', 'admin')
