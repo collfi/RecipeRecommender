@@ -2,7 +2,7 @@
 <title>CookBook</title>
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
 <div class="page">
-<h1>CookBook</h1>
+<h1><a href="127.0.0.1:5000">CookBook</a></h1>
 <div class="metanav">
 {% if not session.logged_in %}
 <a href="{{ url_for('signup') }}">sign up</a>

@@ -89,7 +89,7 @@ def signup():
   return render_template('signup.html', error=error)
 
 def init_route():
-  # sql
+  # sqlalchemy
   init_db()
   # mongo
   init_mongodb()
