@@ -1,4 +1,9 @@
 This is just project.
+How to install project:
+1. type and run $:sudo make install
+2. type and run $:make run
+3. run the mongodb database
+3. open browser with address
 
 todo:
 collfi:
