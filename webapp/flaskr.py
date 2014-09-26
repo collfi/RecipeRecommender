@@ -36,15 +36,20 @@ def before_request():
 
 # routing the application
 ############
+@app.route('/add', methods=['GET'])
+def add():
+  return render_template('add.html')
+
 @app.route('/')
 def show_entries():
   return render_template('show_entries.html', entries=Recipe.query.all())
 
-@app.route('/add', methods=['POST'])
+@app.route('/add_entry', methods=['POST'])
 def add_entry():
-  recipe = Recipe(None, session['user_in'], request.form['title'], request.form['text'], "tags")
+  recipe = Recipe(None, session['user_in'], request.form['title'], request.form['text'], request.form['tags'])
   db_session.add(recipe)
   db_session.commit()
+
   flash('New entry was successfully posted')
   return redirect(url_for('show_entries'))
 
