@@ -4,6 +4,7 @@
 install:
 	wget https://bootstrap.pypa.io/get-pip.py
 	python get-pip.py
+	rm get-pip.py
 	pip install flask
 	pip install sqlalchemy
 	pip install mongokit
