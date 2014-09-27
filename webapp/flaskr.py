@@ -53,6 +53,11 @@ def add_entry():
   flash('New entry was successfully posted')
   return redirect(url_for('show_entries'))
 
+@app.route('/recipe/<id>', methods=['GET', 'POST'])
+def show_entry(id):
+  return render_template('show_entry.html', entry=db_session.query(Recipe).get(id))
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
   error = None

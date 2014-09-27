@@ -17,7 +17,7 @@
   <ul class=entries>
   {% for entry in entries %}
 
-    <li><a href="#"><h2>{{ entry.title }}</h2></a> {{ entry.text|safe }}<br>
+    <li><a href="{{ url_for('show_entry', id=entry.id) }}"><h2>{{ entry.title }}</h2></a> {{ entry.text|safe }}<br>
         <a href="#odkaz_na_profil">{{ entry.userid }}</a><br> {{ entry.tags }}
   {% else %}
     <li><em>Unbelievable. No entries here so far</em>

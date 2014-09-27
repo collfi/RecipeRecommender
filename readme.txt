@@ -18,6 +18,5 @@ git push origin master
 git pull // zobranie zo serveru
 
 cospel:
-problem: recepty musia mat jedinecne meno?
-a ak budu velmi podobne recepty, tak to odporuci 10x palacinky, kde budu zmenene len drobnosti
+???ak budu velmi podobne recepty, tak to odporuci 10x palacinky, kde budu zmenene len drobnosti
 -- do nedele volno

@@ -1,0 +1,8 @@
+{% extends "layout.html" %}
+{% block body %}
+ <a href="{{ url_for('show_entries') }}">Back</a>
+ <ul class=entries>
+    <li><h2>{{ entry.title }}</h2> {{ entry.text|safe }}<br>
+    <a href="#odkaz_na_profil">{{ entry.userid }}</a><br> {{ entry.tags }}
+ </ul>
+{% endblock %}
