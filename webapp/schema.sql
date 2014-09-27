@@ -8,7 +8,8 @@ create table entries (
   title text not null,
   text text not null,
   city text not null,
-  address text not null
+  address text not null,
+  tags text not null
 );
 
 create table users (
