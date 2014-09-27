@@ -53,6 +53,10 @@ def add_entry():
   flash('New entry was successfully posted')
   return redirect(url_for('show_entries'))
 
+@app.route('/user/<login>', methods=['GET', 'POST'])
+def show_profile(login):
+  return render_template('show_profile.html', user=db_session.query(User).get(login))
+
 @app.route('/recipe/<id>', methods=['GET', 'POST'])
 def show_entry(id):
   return render_template('show_entry.html', entry=db_session.query(Recipe).get(id))

@@ -1,10 +1,7 @@
-<!DOCTYPE html>
-<html>
-<head lang="en">
-    <meta charset="UTF-8">
-    <title></title>
-</head>
-<body>
-
-</body>
-</html>
+{% extends "layout.html" %}
+{% block body %}
+ <a href="{{ url_for('show_entries') }}">Back</a>
+ <ul class=entries>
+    <li><h2>{{ user.login }}</h2> {{ user.fullname }}<br> {{ user.email }}
+ </ul>
+{% endblock %}
