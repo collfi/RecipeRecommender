@@ -40,6 +40,10 @@ def before_request():
 def add():
   return render_template('add.html')
 
+@app.route('/edit/<id>-<title>-<text>-<tags>', methods=['GET']) #ja nechcem taku dlhu adresu...ale ako to mam spravit? 
+def edit(id, title, text, tags):
+  return render_template('edit.html', id=id, title=title, full_text=text, tags=tags)
+
 @app.route('/')
 def show_entries():
   return render_template('show_entries.html', entries=Recipe.query.all())
@@ -51,6 +55,17 @@ def add_entry():
   db_session.commit()
 
   flash('New entry was successfully posted')
+  return redirect(url_for('show_entries'))
+
+@app.route('/edit_entry', methods=['POST'])
+def edit_entry():
+  q = db_session.query(Recipe)
+  q = q.filter(Recipe.id == request.form['id'])
+  record = q.one()
+  record.title = request.form['title']
+  record.text = request.form['text']
+  record.tags = request.form['tags']
+  db_session.commit()
   return redirect(url_for('show_entries'))
 
 @app.route('/user/<login>', methods=['GET', 'POST'])
