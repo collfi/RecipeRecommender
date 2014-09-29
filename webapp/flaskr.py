@@ -5,6 +5,7 @@ from mongokit import Connection
 from flask import Flask, request, session, g, redirect, url_for, render_template, flash
 from sqlalchemy import and_
 from models import recommender
+
 # this is our sqlalchemy orm which works with our
 # simple sqlite database to store basic data
 from models.database import db_session, init_db
@@ -40,11 +41,14 @@ def before_request():
 def add():
   return render_template('add.html')
 
-@app.route('/edit/<id>-<title>-<text>-<tags>', methods=['GET']) #ja nechcem taku dlhu adresu...ale ako to mam spravit? 
-def edit(id, title, text, tags):
-  return render_template('edit.html', id=id, title=title, full_text=text, tags=tags)
+@app.route('/recipe/<id>/edit', methods=['GET']) #ja nechcem taku dlhu adresu...ale ako to mam spravit?
+def edit(id):
+  q = db_session.query(Recipe)
+  q = q.filter(Recipe.id == id)
+  record = q.one()
+  return render_template('edit.html', entry=record)
 
-@app.route('/')
+@app.route('/', methods=['GET'])
 def show_entries():
   return render_template('show_entries.html', entries=Recipe.query.all())
 
@@ -53,7 +57,6 @@ def add_entry():
   recipe = Recipe(None, session['user_in'], request.form['title'], request.form['text'], request.form['tags'])
   db_session.add(recipe)
   db_session.commit()
-
   flash('New entry was successfully posted')
   return redirect(url_for('show_entries'))
 
@@ -75,7 +78,6 @@ def show_profile(login):
 @app.route('/recipe/<id>', methods=['GET', 'POST'])
 def show_entry(id):
   return render_template('show_entry.html', entry=db_session.query(Recipe).get(id))
-
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -104,7 +106,7 @@ def signup():
   if request.method == 'POST':
     try:
       # save to sqldb
-      user = User('admin', 'admin', 'cospelthetraceur@gmail.com', 'admin')
+      user = User(request.form['login'], request.form['fullname'], request.form['email'], request.form['password'])
       db_session.add(user)
       db_session.commit()
       # and save document to mongodb

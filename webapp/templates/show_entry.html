@@ -5,5 +5,5 @@
     <li><h2>{{ entry.title }}</h2> {{ entry.text|safe }}<br>
     <a href="{{ url_for('show_profile', login=entry.userid) }}">{{ entry.userid }}</a><br> {{ entry.tags }}
  </ul>
- <a href="{{ url_for('edit', id=entry.id, title=entry.title, text=entry.text, tags=entry.tags) }}">Edit</a>
+ <a href="{{ url_for('edit', id=entry.id) }}">Edit</a>
 {% endblock %}

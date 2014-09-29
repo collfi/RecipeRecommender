@@ -4,12 +4,12 @@
     <form action="{{ url_for('edit_entry') }}" method=post class=add-entry>
       <dl>
         <dt>Title:
-        <dd><input type=text size=30 name=title value="{{ title }}">
+        <dd><input type=text size=30 name=title value="{{ entry.title }}">
         <dt>Text:
-        <dd><textarea name=text rows=5 cols=40>{{ full_text }}</textarea>
+        <dd><textarea name=text rows=5 cols=40>{{ entry.text }}</textarea>
         <dt>Tags:
-        <dd><input type=text size=50 name=tags value="{{ tags }}">
-        <dd><input type=hidden name=id value={{ id }}>
+        <dd><input type=text size=50 name=tags value="{{ entry.tags }}">
+        <dd><input type=hidden name=id value={{ entry.id }}>
         <dd><input type=submit value=Update>
       </dl>
     </form>
