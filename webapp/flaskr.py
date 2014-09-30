@@ -107,8 +107,10 @@ def add():
 def edit(id):
   q = db_session.query(Recipe)
   q = q.filter(Recipe.id == id)
-  record = q.one()
-  return render_template('edit.html', entry=record)
+  entry = q.one()
+  if entry.userid != session['user_in']:
+    return redirect(url_for('show_entries'))
+  return render_template('edit.html', entry=entry)
 
 @app.route('/recipe/add_entry', methods=['POST'])
 def add_entry():
@@ -145,7 +147,11 @@ def image(id):
 
 @app.route('/recipe/<id>', methods=['GET', 'POST'])
 def show_entry(id):
-  return render_template('show_entry.html', entry=db_session.query(Recipe).get(id))
+  entry = entry=db_session.query(Recipe).get(id)
+  canedit = None
+  if entry.userid == session['user_in']:
+      canedit = True
+  return render_template('show_entry.html', entry=entry, canedit=canedit)
 #endregion
 #endregion
 

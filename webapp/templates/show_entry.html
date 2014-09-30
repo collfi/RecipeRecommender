@@ -6,5 +6,7 @@
     <a href="{{ url_for('show_profile', login=entry.userid) }}">{{ entry.userid }}</a><br> {{ entry.tags }}
     <a href="{{ url_for('image', id=entry.id) }}"><img src="data:image/png;base64,{{ entry.image }}"/></a>
  </ul>
+ {% if canedit %}
  <a href="{{ url_for('edit', id=entry.id) }}">Edit</a>
+ {% endif %}
 {% endblock %}
