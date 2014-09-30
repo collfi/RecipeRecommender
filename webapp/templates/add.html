@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block body %}
   {% if session.logged_in %}
-    <form action="{{ url_for('add_entry') }}" method=post class=add-entry>
+    <form action="{{ url_for('add_entry') }}" method=post enctype=multipart/form-data class=add-entry>
       <dl>
         <dt>Title:
         <dd><input type=text size=30 name=title>
@@ -9,6 +9,8 @@
         <dd><textarea name=text rows=5 cols=40></textarea>
         <dt>Tags:
         <dd><input type=text size=50 name=tags>
+        <dt>Picture:
+        <dd><input type=file size=50 name=file>
         <dd><input type=submit value=Share>
       </dl>
     </form>

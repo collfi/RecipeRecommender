@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, Binary
 from database import Base
 
 
@@ -26,13 +26,16 @@ class Recipe(Base):
   title = Column(String(120), unique=False)
   text = Column(String(1000), unique=False)
   tags = Column(String(1000), unique=False)
+  image = Column(Binary(9000), unique=False)
 
-  def __init__(self, id = None, userid=None, title=None, text=None, tags=None):
+  def __init__(self, id = None, userid=None, title=None, text=None, tags=None, image=None):
     self.id = id
     self.userid = userid
     self.title = title
     self.text = text
     self.tags = tags
+    self.image = image
+
 
   def __repr__(self):
     return '<Recipe %r>' % (self.title)

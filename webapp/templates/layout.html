@@ -12,6 +12,8 @@
 <a href="{{ url_for('logout') }}">log out</a>
 <br>
 <a href="{{ url_for('show_profile', login=session.user_in) }}">user profile</a>
+<br>
+<a href="{{ url_for('add') }}">Add</a>
 {% endif %}
 </div>
 {% for message in get_flashed_messages() %}

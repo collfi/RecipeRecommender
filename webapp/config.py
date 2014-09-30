@@ -6,6 +6,7 @@ class Config(object):
   USERNAME = 'admin'
   PASSWORD = 'default'
   TESTING = False
+  UPLOAD_FOLDER = '/tmp/test'
 
 class ProductionConfig(Config):
   DATABASE = '/tmp/flaskr.db'

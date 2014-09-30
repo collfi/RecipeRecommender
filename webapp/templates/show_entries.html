@@ -1,7 +1,6 @@
 {% extends "layout.html" %}
 {% block body %}
   {% if session.logged_in %}
-    <a href="{{ url_for('add') }}">Add</a>
     <!--<form action="{{ url_for('add_entry') }}" method=post class=add-entry>
       <dl>
         <dt>Title:
@@ -15,10 +14,12 @@
     </form>-->
   {% endif %}
   <ul class=entries>
+      Recipes
   {% for entry in entries %}
-
-    <li><a href="{{ url_for('show_entry', id=entry.id) }}"><h2>{{ entry.title }}</h2></a> {{ entry.text|safe }}<br>
-        <a href="{{ url_for('show_profile', login=entry.userid) }}">{{ entry.userid }}</a><br> {{ entry.tags }}
+    <li>
+    <a href="{{ url_for('show_entry', id=entry.id) }}"><h2>{{ entry.title }}</h2></a>
+    <br>
+    from <a href="{{ url_for('show_profile', login=entry.userid) }}">{{ entry.userid }}</a>
   {% else %}
     <li><em>Unbelievable. No entries here so far</em>
   {% endfor %}

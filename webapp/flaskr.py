@@ -2,30 +2,41 @@
 # authors : Michal Lukac, Boris Valentovic
 
 from mongokit import Connection
-from flask import Flask, request, session, g, redirect, url_for, render_template, flash
+from flask import Flask, request, session, flash, redirect, url_for, render_template, make_response
 from sqlalchemy import and_
 from models import recommender
+from werkzeug import secure_filename
 
+#region database
 # this is our sqlalchemy orm which works with our
 # simple sqlite database to store basic data
 from models.database import db_session, init_db
 from models.models import User, Recipe
+
+# constants
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
 # create our mongodb connection and register models
 # this is our recommender computing database
 mconnection = Connection()
 mconnection.register([recommender.User])
 userscol = mconnection['recsys'].users
+#endregion
 
 # create our recsys app
 app = Flask(__name__)
 app.config.from_object('config.Config')
 
+#region misc
 def init_mongodb():
   recommender.init_mongodb(mconnection)
 
-# requests
-#############
+def allowed_file(filename):
+  return '.' in filename and \
+    filename.rsplit('.', 1)[1] in ALLOWED_EXTENSIONS
+#endregion
+
+# region requests
 @app.teardown_appcontext
 def shutdown_session(exception=None):
     db_session.remove()
@@ -34,50 +45,17 @@ def shutdown_session(exception=None):
 def before_request():
   if 'logged_in' not in session and (request.endpoint != 'login' and request.endpoint != 'signup'):
     return redirect(url_for('login'))
+#endregion
 
-# routing the application
-############
-@app.route('/add', methods=['GET'])
-def add():
-  return render_template('add.html')
-
-@app.route('/recipe/<id>/edit', methods=['GET']) #ja nechcem taku dlhu adresu...ale ako to mam spravit?
-def edit(id):
-  q = db_session.query(Recipe)
-  q = q.filter(Recipe.id == id)
-  record = q.one()
-  return render_template('edit.html', entry=record)
-
+#region routing
 @app.route('/', methods=['GET'])
 def show_entries():
   return render_template('show_entries.html', entries=Recipe.query.all())
 
-@app.route('/add_entry', methods=['POST'])
-def add_entry():
-  recipe = Recipe(None, session['user_in'], request.form['title'], request.form['text'], request.form['tags'])
-  db_session.add(recipe)
-  db_session.commit()
-  flash('New entry was successfully posted')
-  return redirect(url_for('show_entries'))
-
-@app.route('/edit_entry', methods=['POST'])
-def edit_entry():
-  q = db_session.query(Recipe)
-  q = q.filter(Recipe.id == request.form['id'])
-  record = q.one()
-  record.title = request.form['title']
-  record.text = request.form['text']
-  record.tags = request.form['tags']
-  db_session.commit()
-  return redirect(url_for('show_entries'))
-
+#region user
 @app.route('/user/<login>', methods=['GET', 'POST'])
 def show_profile(login):
   return render_template('show_profile.html', user=db_session.query(User).get(login))
-
-@app.route('/recipe/<id>', methods=['GET', 'POST'])
-def show_entry(id):
-  return render_template('show_entry.html', entry=db_session.query(Recipe).get(id))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -118,6 +96,56 @@ def signup():
       error = "User already exists!"
       return render_template('signup.html', error=error)
   return render_template('signup.html', error=error)
+#endregion
+
+#region recipe
+@app.route('/recipe/add', methods=['GET'])
+def add():
+  return render_template('add.html')
+
+@app.route('/recipe/<id>/edit', methods=['GET'])
+def edit(id):
+  q = db_session.query(Recipe)
+  q = q.filter(Recipe.id == id)
+  record = q.one()
+  return render_template('edit.html', entry=record)
+
+@app.route('/recipe/add_entry', methods=['POST'])
+def add_entry():
+  # check the file
+  file = request.files['file']
+  # store the recipe
+  recipe = Recipe(None, session['user_in'], request.form['title'], request.form['text'], request.form['tags'], file.read())
+  db_session.add(recipe)
+  db_session.commit()
+  flash('New entry was successfully posted')
+  return redirect(url_for('show_entries'))
+
+@app.route('/recipe/edit_entry', methods=['POST'])
+def edit_entry():
+  q = db_session.query(Recipe)
+  q = q.filter(Recipe.id == request.form['id'])
+  record = q.one()
+  record.title = request.form['title']
+  record.text = request.form['text']
+  record.tags = request.form['tags']
+  db_session.commit()
+  return redirect(url_for('show_entries'))
+
+@app.route("/recipe/<int:id>.jpg")
+def getImage(id):
+  q = db_session.query(Recipe)
+  q = q.filter(Recipe.id == id)
+  response = make_response(q.one()['image'])
+  response.headers['Content-Type'] = 'image/jpeg'
+  response.headers['Content-Disposition'] = 'attachment; filename=img.jpg'
+  return response
+
+@app.route('/recipe/<id>', methods=['GET', 'POST'])
+def show_entry(id):
+  return render_template('show_entry.html', entry=db_session.query(Recipe).get(id))
+#endregion
+#endregion
 
 def init_route():
   # sqlalchemy
