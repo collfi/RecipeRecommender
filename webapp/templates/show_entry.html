@@ -4,6 +4,7 @@
  <ul class=entries>
     <li><h2>{{ entry.title }}</h2> {{ entry.text|safe }}<br>
     <a href="{{ url_for('show_profile', login=entry.userid) }}">{{ entry.userid }}</a><br> {{ entry.tags }}
+    <a href="{{ url_for('image', id=entry.id) }}"><img src="data:image/png;base64,{{ entry.image }}"/></a>
  </ul>
  <a href="{{ url_for('edit', id=entry.id) }}">Edit</a>
 {% endblock %}

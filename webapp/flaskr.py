@@ -5,7 +5,7 @@ from mongokit import Connection
 from flask import Flask, request, session, flash, redirect, url_for, render_template, make_response
 from sqlalchemy import and_
 from models import recommender
-from werkzeug import secure_filename
+import base64
 
 #region database
 # this is our sqlalchemy orm which works with our
@@ -115,7 +115,8 @@ def add_entry():
   # check the file
   file = request.files['file']
   # store the recipe
-  recipe = Recipe(None, session['user_in'], request.form['title'], request.form['text'], request.form['tags'], file.read())
+  recipe = Recipe(None, session['user_in'], request.form['title'], request.form['text'], request.form['tags'],
+                  base64.b64encode(file.read()))
   db_session.add(recipe)
   db_session.commit()
   flash('New entry was successfully posted')
@@ -125,18 +126,19 @@ def add_entry():
 def edit_entry():
   q = db_session.query(Recipe)
   q = q.filter(Recipe.id == request.form['id'])
-  record = q.one()
-  record.title = request.form['title']
-  record.text = request.form['text']
-  record.tags = request.form['tags']
+  recipe = q.one()
+  recipe.title = request.form['title']
+  recipe.text = request.form['text']
+  recipe.tags = request.form['tags']
   db_session.commit()
   return redirect(url_for('show_entries'))
 
-@app.route("/recipe/<int:id>.jpg")
-def getImage(id):
+@app.route("/recipe/<id>.png")
+def image(id):
   q = db_session.query(Recipe)
   q = q.filter(Recipe.id == id)
-  response = make_response(q.one()['image'])
+  recipe = q.one()
+  response = make_response(recipe.image)
   response.headers['Content-Type'] = 'image/jpeg'
   response.headers['Content-Disposition'] = 'attachment; filename=img.jpg'
   return response
