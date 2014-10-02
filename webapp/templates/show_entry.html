@@ -6,7 +6,18 @@
     <a href="{{ url_for('show_profile', login=entry.userid) }}">{{ entry.userid }}</a><br> {{ entry.tags }}
     <!--<a href="{{ url_for('image', id=entry.id) }}"><img src="data:image/png;base64,{{ entry.image }}"/></a>-->
  </ul>
- <div id="ratings" data-path="{{ url_for('static', filename='lib/images') }}"></div>
+ <script>
+$(document).ready(function(){
+  $("#ratings").raty({
+  cancelOff  : "{{ url_for('static', filename='lib/images/cancel-off.png') }}" ,
+  cancelOn   : "{{ url_for('static', filename='lib/images/cancel-on.png') }}",
+  starHalf   : "{{ url_for('static', filename='lib/images/star-half.png') }}",
+  starOff    : "{{ url_for('static', filename='lib/images/star-off.png') }}" ,
+  starOn     : "{{ url_for('static', filename='lib/images/star-on.png') }}",
+  });
+});
+</script>
+ <div id="ratings" path="{{ url_for('static', filename='lib/images/') }}"></div>
  {% if canedit %}
  <a href="{{ url_for('edit', id=entry.id) }}">Edit</a>
  {% endif %}

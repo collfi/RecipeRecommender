@@ -10,7 +10,7 @@ git pull origin master
 
 todo:
 collfi:
---http://wbotelhos.com/raty/   skut to spojazdnit
+-- zatial volno
 
 cospel:
 -- spravit engine.py a zacat s content based recommending

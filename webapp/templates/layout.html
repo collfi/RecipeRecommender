@@ -1,16 +1,13 @@
 <!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
 <title>CookBook</title>
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
-<script src="{{ url_for('static', filename='jquery.js') }}"></script>
-<script src="{{ url_for('static', filename='lib/jquery.raty.js') }}"></script>
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='lib/jquery.raty.css') }}">
-<script>
-$('#ratings').raty({
-  path: function() {
-    return this.getAttribute('data-path');
-  }
-});
-</script>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+<script type=text/javascript src="{{ url_for('static', filename='jquery.js') }}"></script>
+<script type=text/javascript src="{{ url_for('static', filename='lib/jquery.raty.js') }}"></script>
+</head>
+<body>
 <div class="page">
 <h1><a href="{{ url_for('show_entries') }}">CookBook</a></h1>
 <div class="metanav">
@@ -31,3 +28,5 @@ $('#ratings').raty({
 {% endfor %}
 {% block body %}{% endblock %}
 </div>
+</body>
+</html>
