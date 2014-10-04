@@ -170,7 +170,7 @@ def rate():
       user.ratings()
       return json.dumps({'status':'OK'})
     except:
-      return jsom.dumps({'status':'ERR'})
+      return json.dumps({'status':'ERR'})
 
 #endregion
 
