@@ -5,7 +5,9 @@ from mongokit import Connection
 from flask import Flask, request, session, flash, redirect, url_for, render_template, make_response
 from sqlalchemy import and_
 from models import recommender
+from datetime import datetime
 import base64
+import json
 
 #region database
 # this is our sqlalchemy orm which works with our
@@ -152,7 +154,26 @@ def show_entry(id):
   if entry.userid == session['user_in']:
       canedit = True
   return render_template('show_entry.html', entry=entry, canedit=canedit)
+
 #endregion
+
+#region api
+@app.route('/api/rate', methods=['POST'])
+def rate():
+  if request.method == "POST":
+    try:
+      data = json.loads(request.data)
+      # insert rating for user and item
+      user = userscol.User.find_one({'_id': data['userid']})
+      user['ratings'].append({'itemid': data['itemid'], 'value': float(data['rating']), 'date_creation': datetime.now()})
+      user.save()
+      user.ratings()
+      return json.dumps({'status':'OK'})
+    except:
+      return jsom.dumps({'status':'ERR'})
+
+#endregion
+
 #endregion
 
 def init_route():

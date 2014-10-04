@@ -12,11 +12,14 @@ class User(Document):
   structure = {
     #'_id' : str,
     #_id is login, every object in mongodb has _id attribute
-    'rating' : [{'itemid' : int, 'value' : float, 'date_creation' : datetime}],
+    'ratings' : [{'itemid' : int, 'value' : float, 'date_creation' : datetime}],
   }
   use_dot_notation = True
   #required_fields = ['_id']
   #default_values = {...}
+  def ratings(self):
+      print self.ratings
+
   def __repr__(self):
     return '<User %r>' % (self._id)
 
