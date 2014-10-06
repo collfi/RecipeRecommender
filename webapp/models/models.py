@@ -26,6 +26,7 @@ class Recipe(Base):
   title = Column(String(120), unique=False)
   text = Column(String(1000), unique=False)
   tags = Column(String(1000), unique=False)
+  ingredients = Column(String(1000), unique=False)
   image = Column(Binary(9000), unique=False)
 
   def __init__(self, id = None, userid=None, title=None, text=None, tags=None, image=None):

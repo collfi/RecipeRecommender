@@ -12,13 +12,20 @@ class User(Document):
   structure = {
     #'_id' : str,
     #_id is login, every object in mongodb has _id attribute
+
+    # value is rating, itemid is id of item
     'ratings' : [{'itemid' : int, 'value' : float, 'date_creation' : datetime}],
+    # these are ids of recipes
+    'favorites' : [ int],
   }
   use_dot_notation = True
   #required_fields = ['_id']
   #default_values = {...}
-  def ratings(self):
-      print self.ratings
+  def print_ratings(self):
+    print "ratings:", self.ratings
+
+  def print_favorites(self):
+    print "favorites:", self.favorites
 
   def __repr__(self):
     return '<User %r>' % (self._id)
@@ -29,4 +36,3 @@ def init_mongodb(mconnection):
   user = userscol.User()
   user['_id'] = 'admin'
   user.save()
-

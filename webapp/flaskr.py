@@ -149,15 +149,40 @@ def image(id):
 
 @app.route('/recipe/<id>', methods=['GET', 'POST'])
 def show_entry(id):
-  entry = entry=db_session.query(Recipe).get(id)
   canedit = None
+  favorited = None
+  # has user already faved the item?
+  user = userscol.User.find_one({'_id': session['user_in'], 'favorites': int(id)})
+  print user
+  entry = db_session.query(Recipe).get(id)
+  if user:
+      favorited = True
   if entry.userid == session['user_in']:
       canedit = True
-  return render_template('show_entry.html', entry=entry, canedit=canedit)
-
+  return render_template('show_entry.html', entry=entry, canedit=canedit, favorited=favorited)
 #endregion
 
 #region api
+@app.route('/api/favorite', methods=['POST'])
+def favorite():
+  if request.method == "POST":
+    #try:
+    data = json.loads(request.data)
+    if data['favorite'] == '1':
+      user = userscol.User.find_one({'_id': data['userid']})
+      user['favorites'].append(int(data['itemid']))
+      user.save()
+      #user.print_favorites()
+    else:
+      mconnection['recsys'].users.update({'_id': session['user_in']},
+                                         {'$pull': {'favorites': int(data['itemid'])}})
+      user = userscol.User.find_one({'_id': data['userid']})
+      #user.print_favorites()
+    return json.dumps({'status':'OK'})
+    #except Exception as e:
+    #  print "error status"
+    #  return json.dumps({'status':'ERR'})
+
 @app.route('/api/rate', methods=['POST'])
 def rate():
   if request.method == "POST":
@@ -167,13 +192,12 @@ def rate():
       user = userscol.User.find_one({'_id': data['userid']})
       user['ratings'].append({'itemid': data['itemid'], 'value': float(data['rating']), 'date_creation': datetime.now()})
       user.save()
-      user.ratings()
+      #user.print_ratings()
       return json.dumps({'status':'OK'})
     except:
       return json.dumps({'status':'ERR'})
 
 #endregion
-
 #endregion
 
 def init_route():

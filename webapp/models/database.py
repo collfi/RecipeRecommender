@@ -19,3 +19,6 @@ def init_db():
     user = User('admin', 'admin', 'cospelthetraceur@gmail.com', 'admin')
     db_session.add(user)
     db_session.commit()
+    recipe = Recipe(1, 'admin', 'prazenica', 'postup', 'tag1 tag2', None)
+    db_session.add(recipe)
+    db_session.commit()

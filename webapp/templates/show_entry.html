@@ -4,7 +4,7 @@
  <ul class=entries>
     <li><a href="{{ url_for('show_entry', id=entry.id) }}" ><h2>{{ entry.title }}</h2></a> {{ entry.text|safe }}<br>
     <a href="{{ url_for('show_profile', login=entry.userid) }}">{{ entry.userid }}</a><br> {{ entry.tags }}
-    <!--<a href="{{ url_for('image', id=entry.id) }}"><img src="data:image/png;base64,{{ entry.image }}"/></a>-->
+    <a href="{{ url_for('image', id=entry.id) }}"><img src="data:image/png;base64,{{ entry.image }}"/></a>
  </ul>
  <script>
 $(document).ready(function(){
@@ -30,9 +30,41 @@ $(document).ready(function(){
             }
         });
   }});
+
+  $( "#favorite" ).click(function() {
+        $.ajax({
+            url: "{{ url_for('favorite') }}",
+            type: 'POST',
+            data: JSON.stringify({'favorite': $( "#favorite" ).attr( "favorited" ),'userid':'{{ session.user_in }}','itemid':{{ entry.id }} }),
+            contentType: 'application/json;charset=UTF-8',
+            success: function(response) {
+                if(response == "ERR") {
+                    alert(response);
+                }
+                else {
+                    if( $("#favorite").attr("favorited") == "1") {
+                        $("#favorite").attr("favorited", "0");
+                        $("#favorite").attr("src", "{{ url_for('static', filename='images/removedoc.png') }}");
+                    }
+                    else {
+                        $("#favorite").attr("favorited", "1");
+                        $("#favorite").attr("src", "{{ url_for('static', filename='images/adddoc.png') }}");
+                    }
+                }
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+  });
 });
 </script>
- <div id="ratings" path="{{ url_for('static', filename='lib/images/') }}"></div>
+{% if favorited %}
+ <img id="favorite" favorited="0" src="{{ url_for('static', filename='images/removedoc.png') }}"/>
+{% else %}
+ <img id="favorite" favorited="1" src="{{ url_for('static', filename='images/adddoc.png') }}"/>
+{% endif %}
+<div id="ratings" path="{{ url_for('static', filename='lib/images/') }}"></div>
  {% if canedit %}
  <a href="{{ url_for('edit', id=entry.id) }}">Edit</a>
  {% endif %}
