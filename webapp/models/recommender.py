@@ -10,9 +10,8 @@ def max_length(length):
 
 class User(Document):
   structure = {
-    #'_id' : str,
     #_id is login, every object in mongodb has _id attribute
-
+    #'_id' : str,
     # value is rating, itemid is id of item
     'ratings' : [{'itemid' : int, 'value' : float, 'date_creation' : datetime}],
     # these are ids of recipes

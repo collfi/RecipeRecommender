@@ -1,6 +1,9 @@
 from mongokit import Connection
+import sys
+# i need to add this because of imports
+sys.path.append('/home/michal/Desktop/recsys/RecipeRecommender/')
 from sqlalchemy import and_
-from models import recommender
+from webapp.models import recommender
 from datetime import datetime
 import base64
 import json
