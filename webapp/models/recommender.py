@@ -30,9 +30,44 @@ class User(Document):
   def __repr__(self):
     return '<User %r>' % (self._id)
 
+class Recipe(Document):
+  structure = {
+    # _id is id of recipe
+    #favorites is list of user ids
+    'favorites' : [ unicode ],
+  }
+  use_dot_notation = True
+  def print_favorites(self):
+    print "favorites:", self.favorites
+
+  def __repr__(self):
+    return '<Recipe %r>' % (self._id)
+
+
+class NonPersonal(Document):
+  structure = {
+      # ids of top5favorites recipes
+      'top5favorites' : [ int]
+  }
+  use_dot_notation = True
+
+  def print_top5favorites(self):
+      print "top 5 favorites:", self.top5favorites
+
+  def __repr__(self):
+    return '<NonPersonal %r>' % (self._id)
+
+
 def init_mongodb(mconnection):
   userscol = mconnection['recsys'].users
   userscol.drop()
+  recipecol = mconnection['recsys'].recipes
+  recipecol.drop()
+  nonpcol = mconnection['recsys'].nonpersonal
+  nonpcol.drop()
+  recipe = recipecol.Recipe()
+  recipe['_id'] = 1
+  recipe.save()
   user = userscol.User()
   user['_id'] = 'admin'
   user.save()

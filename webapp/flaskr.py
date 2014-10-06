@@ -22,7 +22,12 @@ ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 # this is our recommender computing database
 mconnection = Connection()
 mconnection.register([recommender.User])
+mconnection.register([recommender.Recipe])
+mconnection.register([recommender.NonPersonal])
+
 userscol = mconnection['recsys'].users
+recipecol = mconnection['recsys'].recipes
+nonpcol = mconnection['recsys'].nonpersonal
 #endregion
 
 # create our recsys app
@@ -123,6 +128,10 @@ def add_entry():
                   base64.b64encode(file.read()))
   db_session.add(recipe)
   db_session.commit()
+  # create in mongo
+  recipemongo = recipecol.Recipe()
+  recipemongo['_id'] = recipe.id
+  recipemongo.save()
   flash('New entry was successfully posted')
   return redirect(url_for('show_entries'))
 
@@ -153,7 +162,6 @@ def show_entry(id):
   favorited = None
   # has user already faved the item?
   user = userscol.User.find_one({'_id': session['user_in'], 'favorites': int(id)})
-  print user
   entry = db_session.query(Recipe).get(id)
   if user:
       favorited = True
@@ -169,19 +177,22 @@ def favorite():
     #try:
     data = json.loads(request.data)
     if data['favorite'] == '1':
+      # save to users
       user = userscol.User.find_one({'_id': data['userid']})
       user['favorites'].append(int(data['itemid']))
       user.save()
-      #user.print_favorites()
+      # save to recipes
+      recipe = recipecol.Recipe.find_one({'_id': int(data['itemid'])})
+      print "recippppeee:", recipe
+      recipe['favorites'].append(unicode(data['userid']))
+      recipe.save()
     else:
+      # and remove
       mconnection['recsys'].users.update({'_id': session['user_in']},
                                          {'$pull': {'favorites': int(data['itemid'])}})
-      user = userscol.User.find_one({'_id': data['userid']})
-      #user.print_favorites()
+      mconnection['recsys'].recipes.update({'_id': int(data['itemid'])},
+                                         {'$pull': {'favorites': data['userid']}})
     return json.dumps({'status':'OK'})
-    #except Exception as e:
-    #  print "error status"
-    #  return json.dumps({'status':'ERR'})
 
 @app.route('/api/rate', methods=['POST'])
 def rate():
