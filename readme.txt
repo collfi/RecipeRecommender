@@ -17,7 +17,8 @@ collfi:
 -- 4. prestuduj si co to je cron.txt a spust $crontab cron.txt // ten cron.txt si budes musiet upravit ale nepridavaj git add cron.txt prosim nech to nerozbijes mne :)
    http://code.tutsplus.com/tutorials/scheduling-tasks-with-cron-jobs--net-8800
 -- v engine.py si uprav sys.path, sprav funkciu mostfavorite v engine.py ktora zisti top 5 najviac favorites receptov a ulozi ich do monga, uz som ti vytvoril model
-   NonPersonal kde pojdu id tych top receptov a model Recipe kde sa nachadzaju favorites  s ktorymi budes pocitat
+   NonPersonal kde pojdu id tych top receptov a model Recipe kde sa nachadzaju favorites  s ktorymi budes pocitat,
+   vo vysledku to bude vypadat tak ze ten engine.py sa bude pustat cronom kazdych x minut a spocita top5favorites
 
 cospel:
 -- pre tento tyzden volno, robil som toho az az
