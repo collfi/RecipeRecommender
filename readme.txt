@@ -9,7 +9,7 @@ git pull // zobranie zo serveru
 git pull origin master
 
 todo:
-collfi:
+collfi do nedele:
 -- 1. prestuduj si zmeny co som spravil
 -- 2. dorobit show_entry, pokial je oretingovany dany recept userom tak to zobrazit aj v hviezdickach, inspirovat sa favoritom
    toto zistis lahko z mongo User
@@ -21,5 +21,7 @@ collfi:
    NonPersonal kde pojdu id tych top receptov a model Recipe kde sa nachadzaju favorites  s ktorymi budes pocitat,
    vo vysledku to bude vypadat tak ze ten engine.py sa bude pustat cronom kazdych x minut a spocita top5favorites
 
-cospel:
--- pre tento tyzden volno, robil som toho az az
+cospel dalsi tyzden:
+-- 1. zobrazenie top5favorites
+-- 2. upravenie dizajnu pre recept, zobrazenie priemerneho hodnotenia pre recept, pocitanie priemernych hodnoteni s cronom
+-- 3. zacanie prace na content based recommendation
