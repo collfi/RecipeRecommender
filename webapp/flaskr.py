@@ -183,7 +183,6 @@ def favorite():
       user.save()
       # save to recipes
       recipe = recipecol.Recipe.find_one({'_id': int(data['itemid'])})
-      print "recippppeee:", recipe
       recipe['favorites'].append(unicode(data['userid']))
       recipe.save()
     else:
