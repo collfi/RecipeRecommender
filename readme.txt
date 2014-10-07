@@ -19,9 +19,10 @@ collfi do nedele:
    http://code.tutsplus.com/tutorials/scheduling-tasks-with-cron-jobs--net-8800
 -- v engine.py si uprav sys.path, sprav funkciu mostfavorite v engine.py ktora zisti top 5 najviac favorites receptov a ulozi ich do monga, uz som ti vytvoril model
    NonPersonal kde pojdu id tych top receptov a model Recipe kde sa nachadzaju favorites  s ktorymi budes pocitat,
-   vo vysledku to bude vypadat tak ze ten engine.py sa bude pustat cronom kazdych x minut a spocita top5favorites
+   vo vysledku to bude vypadat tak ze ten engine.py sa bude pustat cronom kazdych x minut a spocita top5favorites a ulozi ich do monga a v stranke si ich uz iba selektnem
 
 cospel dalsi tyzden:
 -- 1. zobrazenie top5favorites
--- 2. upravenie dizajnu pre recept, zobrazenie priemerneho hodnotenia pre recept, pocitanie priemernych hodnoteni s cronom
--- 3. zacanie prace na content based recommendation
+-- 2. zobrazenie osobnej favorites stranky pre uzivatela
+-- 3. upravenie dizajnu pre recept, zobrazenie priemerneho hodnotenia pre recept, pocitanie priemernych hodnoteni s cronom
+-- 4. zacanie prace na content based recommendation
