@@ -67,6 +67,23 @@ def init_mongodb(mconnection):
   recipe = recipecol.Recipe()
   recipe['_id'] = 1
   recipe.save()
+
+  recipe2 = recipecol.Recipe()
+  recipe2['_id'] = 2
+  recipe2.save()
+
+  recipe3 = recipecol.Recipe()
+  recipe3['_id'] = 3
+  recipe3.save()
+
   user = userscol.User()
   user['_id'] = 'admin'
   user.save()
+
+  user2 = userscol.User()
+  user2['_id'] = 'collfi'
+  user2.save()
+
+  user3 = userscol.User()
+  user3['_id'] = 'cospel'
+  user3.save()
