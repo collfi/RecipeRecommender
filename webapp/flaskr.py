@@ -160,14 +160,29 @@ def image(id):
 def show_entry(id):
   canedit = None
   favorited = None
+
   # has user already faved the item?
   user = userscol.User.find_one({'_id': session['user_in'], 'favorites': int(id)})
+  # has user already rated the idem?
+  #rated  = userscol.find_one({'_id': session['user_in'], 'ratings.itemid': int(id)}, {'ratings.value': 1, '_id':1})
+  rated  = userscol.find_one({'_id': session['user_in'], 'ratings.itemid': int(id)}, {'ratings.itemid': 1,
+                                                                                      'ratings.value': 1, '_id':0})
+  #je to dobre? ja som myslel, ze to vybere vzdy iba jeden rating, ale ono ro vybere vsetky od uzivatela
+  #a potom ich musim prechadzat vo tom for, da sa to spravit aby to vybralo iba 1 konkretny pre ten recept
+  #a ja som dal nieco take ako rated.get('ratings')[0].get('value')??
+  value = 0
+  #flash(rated)
+  if rated:
+    for item in rated.get('ratings'):
+        if item.get('itemid') == int(id):
+            value = item.get('value')
+
   entry = db_session.query(Recipe).get(id)
   if user:
       favorited = True
   if entry.userid == session['user_in']:
       canedit = True
-  return render_template('show_entry.html', entry=entry, canedit=canedit, favorited=favorited)
+  return render_template('show_entry.html', entry=entry, canedit=canedit, favorited=favorited, value=value)
 #endregion
 
 #region api

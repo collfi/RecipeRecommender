@@ -7,12 +7,20 @@
         <dd><input type=text size=30 name=title>
         <dt>Text:
         <dd><textarea name=text rows=5 cols=40></textarea>
+
         <dt>Tags:
-        <dd><input type=text size=50 name=tags>
+        <script src="{{ url_for('static', filename='jQuery-Tags/jquery.tagsinput.js') }}"></script>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='jQuery-Tags/jquery.tagsinput.css') }}"/>
+        <dd><input type=text size=50 name=tags id="tags">
+        <script>$('#tags').tagsInput();</script>
+
         <dt>Picture:
         <dd><input type=file size=50 name=file>
         <dd><input type=submit value=Share>
       </dl>
     </form>
+
+    <!--<input name="tags" id="tags" value="tag1,tag2,tag3" />
+    <script>$('#tags').tagsInput();</script>-->
   {% endif %}
 {% endblock %}

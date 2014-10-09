@@ -7,8 +7,13 @@
         <dd><input type=text size=30 name=title value="{{ entry.title }}">
         <dt>Text:
         <dd><textarea name=text rows=5 cols=40>{{ entry.text }}</textarea>
+
         <dt>Tags:
-        <dd><input type=text size=50 name=tags value="{{ entry.tags }}">
+        <script src="{{ url_for('static', filename='jQuery-Tags/jquery.tagsinput.js') }}"></script>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='jQuery-Tags/jquery.tagsinput.css') }}"/>
+        <dd><input type=text size=50 name=tags value="{{ entry.tags }}" id="tags">
+        <script>$('#tags').tagsInput();</script>
+
         <dd><input type=hidden name=id value={{ entry.id }}>
         <dd><input type=submit value=Update>
       </dl>

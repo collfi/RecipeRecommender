@@ -8,13 +8,15 @@
  </ul>
  <script>
 $(document).ready(function(){
+
   $("#ratings").raty({
   cancelOff  : "{{ url_for('static', filename='lib/images/cancel-off.png') }}" ,
   cancelOn   : "{{ url_for('static', filename='lib/images/cancel-on.png') }}",
   starHalf   : "{{ url_for('static', filename='lib/images/star-half.png') }}",
   starOff    : "{{ url_for('static', filename='lib/images/star-off.png') }}" ,
   starOn     : "{{ url_for('static', filename='lib/images/star-on.png') }}",
-
+  score      : {{ value }},
+  readOnly   : ({{ value }} > 0),
 
   click: function(score, evt) {
         $.ajax({
@@ -24,12 +26,15 @@ $(document).ready(function(){
             contentType: 'application/json;charset=UTF-8',
             success: function(response) {
                 console.log(response);
+                $("#ratings").raty('readOnly', true);
             },
             error: function(error) {
                 console.log(error);
             }
         });
   }});
+
+
 
   $( "#favorite" ).click(function() {
         $.ajax({
