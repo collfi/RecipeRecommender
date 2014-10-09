@@ -3,11 +3,13 @@
  <a href="{{ url_for('show_entries') }}">Back</a>
  <ul class=entries>
     <li><a href="{{ url_for('show_entry', id=entry.id) }}" ><h2>{{ entry.title }}</h2></a> {{ entry.text|safe }}<br>
-    <a href="{{ url_for('show_profile', login=entry.userid) }}">{{ entry.userid }}</a><br> {{ entry.tags }}
+    <a href="{{ url_for('show_profile', login=entry.userid) }}">{{ entry.userid }}</a><br> <input id="tags" value="{{ entry.tags }}" disabled/>
     <a href="{{ url_for('image', id=entry.id) }}"><img src="data:image/png;base64,{{ entry.image }}"/></a>
  </ul>
  <script>
 $(document).ready(function(){
+    $('#tags').tagsInput({
+    });
 
   $("#ratings").raty({
   cancelOff  : "{{ url_for('static', filename='lib/images/cancel-off.png') }}" ,

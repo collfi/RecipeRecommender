@@ -9,8 +9,6 @@
         <dd><textarea name=text rows=5 cols=40>{{ entry.text }}</textarea>
 
         <dt>Tags:
-        <script src="{{ url_for('static', filename='jQuery-Tags/jquery.tagsinput.js') }}"></script>
-        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='jQuery-Tags/jquery.tagsinput.css') }}"/>
         <dd><input type=text size=50 name=tags value="{{ entry.tags }}" id="tags">
         <script>$('#tags').tagsInput();</script>
 

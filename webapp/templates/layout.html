@@ -6,6 +6,8 @@
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
 <script type=text/javascript src="{{ url_for('static', filename='jquery.js') }}"></script>
 <script type=text/javascript src="{{ url_for('static', filename='lib/jquery.raty.js') }}"></script>
+<script src="{{ url_for('static', filename='jQuery-Tags/jquery.tagsinput.js') }}"></script>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='jQuery-Tags/jquery.tagsinput.css') }}"/>
 <script type=text/javascript>
   $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
 </script>
