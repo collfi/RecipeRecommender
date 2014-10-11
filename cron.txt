@@ -1,2 +1,0 @@
-* * * * * /usr/bin/python2.7 /home/michal/Desktop/recsys/RecipeRecommender/recengine/engine.py > /home/michal/Desktop/recsys/RecipeRecommender/recengine/stdout.txt 2> /home/michal/Desktop/recsys/RecipeRecommender/recengine/stderr.txt
-

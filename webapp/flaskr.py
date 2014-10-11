@@ -166,12 +166,12 @@ def show_entry(id):
   # has user already rated the idem?
   #rated  = userscol.find_one({'_id': session['user_in'], 'ratings.itemid': int(id)}, {'ratings.value': 1, '_id':1})
   rated  = userscol.find_one({'_id': session['user_in'], 'ratings.itemid': int(id)}, {'ratings.itemid': 1,
-                                                                                      'ratings.value': 1, '_id':0})
+                                                                                      'ratings.value': 1, '_id': 0})
   #je to dobre? ja som myslel, ze to vybere vzdy iba jeden rating, ale ono ro vybere vsetky od uzivatela
   #a potom ich musim prechadzat vo tom for, da sa to spravit aby to vybralo iba 1 konkretny pre ten recept
   #a ja som dal nieco take ako rated.get('ratings')[0].get('value')??
   value = 0
-  #flash(rated)
+
   if rated:
     for item in rated.get('ratings'):
         if item.get('itemid') == int(id):
@@ -200,6 +200,15 @@ def favorite():
       recipe = recipecol.Recipe.find_one({'_id': int(data['itemid'])})
       recipe['favorites'].append(unicode(data['userid']))
       recipe.save()
+      #favorites test
+      #fav = []
+      #for item in recipecol.Recipe.find():
+      #  fav.append((item.get('_id'),  len(item.get('favorites'))))
+      #  #flash(fav)
+      #sor = sorted(fav, key=lambda tup: tup[1])
+      #sor.reverse()
+      #sor = sor[:5]
+      #flash(sor)
     else:
       # and remove
       mconnection['recsys'].users.update({'_id': session['user_in']},

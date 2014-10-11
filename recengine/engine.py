@@ -1,7 +1,8 @@
 from mongokit import Connection
 import sys
 # i need to add this because of imports
-sys.path.append('/home/michal/Desktop/recsys/RecipeRecommender/')
+#sys.path.append('/home/michal/Desktop/recsys/RecipeRecommender/')
+sys.path.append('/home/collfi/RecSys/RecipeRecommender/')
 from sqlalchemy import and_
 from webapp.models import recommender
 from datetime import datetime
@@ -26,7 +27,18 @@ recipecol = mconnection['recsys'].recipes
 nonpcol = mconnection['recsys'].nonpersonal
 
 def mostfavorite():
-    pass
+  fav = []
+  for item in recipecol.Recipe.find():
+    #fav[item.get('_id')] = len(item.get('favorites'))
+    fav.append((item.get('_id'),  len(item.get('favorites'))))
+  fav_sorted = sorted(fav, key=lambda tup: tup[1])
+  fav_sorted.reverse()
+  fav_sorted = fav_sorted[:5]
+  #alebo fav_sorted = fav_sorted.reverse()[:5]??
+  for item in fav_sorted:
+    recipe = nonpcol.NonPersonal.find()
+    recipe['top5favorites'].append(int(item[0]))
+    recipe.save()
 
 def recommend():
   print "z tejto funkcie sa budu volat vsetky funkcie na vypocty a ukladanie do db"

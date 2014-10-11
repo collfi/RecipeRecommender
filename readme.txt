@@ -17,12 +17,11 @@ done-- 3. upravit tagy takto https://github.com/xoxco/jQuery-Tags-Input   bude t
 done-- 4. vytvor dalsich dvoch uzivatelov a tri recepty v database.py a recommender.py
 -- 5. prestuduj si co to je cron.txt a spust $crontab cron.txt // ten cron.txt si budes musiet upravit ale nepridavaj git add cron.txt prosim nech to nerozbijes mne :)
    http://code.tutsplus.com/tutorials/scheduling-tasks-with-cron-jobs--net-8800
--- v engine.py si uprav sys.path, sprav funkciu mostfavorite v engine.py ktora zisti top 5 najviac favorites receptov a ulozi ich do monga, uz som ti vytvoril model
+done-- v engine.py si uprav sys.path, sprav funkciu mostfavorite v engine.py ktora zisti top 5 najviac favorites receptov a ulozi ich do monga, uz som ti vytvoril model
    NonPersonal kde pojdu id tych top receptov a model Recipe kde sa nachadzaju favorites  s ktorymi budes pocitat,
    vo vysledku to bude vypadat tak ze ten engine.py sa bude pustat cronom kazdych x minut a spocita top5favorites a ulozi ich do monga a v stranke si ich uz iba selektnem
 
 cospel dalsi tyzden:
-!! ked si pozeram recept ineho uzivatela, tak nefunguje favorite? teda nejako divne funguje, ked kliknem tak sa nic nestane, ale pri refresh sa to uz zobrazi
 -- 1. zobrazenie top5favorites
 -- 2. zobrazenie osobnej favorites stranky pre uzivatela
 -- 3. upravenie dizajnu pre recept, zobrazenie priemerneho hodnotenia pre recept, pocitanie priemernych hodnoteni s cronom
