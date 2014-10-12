@@ -34,6 +34,7 @@ class Recipe(Document):
     # _id is id of recipe
     #favorites is list of user ids
     'favorites' : [ unicode ],
+    'ingredients' : [{'ingredient':unicode, 'number': unicode}]
   }
   use_dot_notation = True
   def print_favorites(self):
