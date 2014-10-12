@@ -185,6 +185,19 @@ def show_entry(id):
   return render_template('show_entry.html', entry=entry, canedit=canedit, favorited=favorited, value=value)
 #endregion
 
+#region recommendations
+@app.route('/top5fav', methods=['GET'])
+def top5fav():
+  recipe = nonpcol.NonPersonal.find_one({'_id':1})
+  print recipe['top5favorites']
+  q = db_session.query(Recipe)
+  q = q.filter(Recipe.id.in_(recipe['top5favorites']))
+  entries = q.all()
+  print entries
+  return render_template('top5fav.html', entries=entries)
+#endregion
+#endregion
+
 #region api
 @app.route('/api/favorite', methods=['POST'])
 def favorite():
@@ -200,15 +213,6 @@ def favorite():
       recipe = recipecol.Recipe.find_one({'_id': int(data['itemid'])})
       recipe['favorites'].append(unicode(data['userid']))
       recipe.save()
-      #favorites test
-      #fav = []
-      #for item in recipecol.Recipe.find():
-      #  fav.append((item.get('_id'),  len(item.get('favorites'))))
-      #  #flash(fav)
-      #sor = sorted(fav, key=lambda tup: tup[1])
-      #sor.reverse()
-      #sor = sor[:5]
-      #flash(sor)
     else:
       # and remove
       mconnection['recsys'].users.update({'_id': session['user_in']},

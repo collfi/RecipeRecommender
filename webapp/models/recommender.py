@@ -64,6 +64,11 @@ def init_mongodb(mconnection):
   recipecol.drop()
   nonpcol = mconnection['recsys'].nonpersonal
   nonpcol.drop()
+
+  nonpcol = nonpcol.NonPersonal()
+  nonpcol['_id'] = 1
+  nonpcol.save()
+
   recipe = recipecol.Recipe()
   recipe['_id'] = 1
   recipe.save()

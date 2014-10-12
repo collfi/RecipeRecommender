@@ -1,8 +1,8 @@
 from mongokit import Connection
 import sys
 # i need to add this because of imports
-#sys.path.append('/home/michal/Desktop/recsys/RecipeRecommender/')
-sys.path.append('/home/collfi/RecSys/RecipeRecommender/')
+sys.path.append('/home/michal/Desktop/recsys/RecipeRecommender/')
+#sys.path.append('/home/collfi/RecSys/RecipeRecommender/')
 from sqlalchemy import and_
 from webapp.models import recommender
 from datetime import datetime
@@ -35,8 +35,12 @@ def mostfavorite():
   fav_sorted.reverse()
   fav_sorted = fav_sorted[:5]
   #alebo fav_sorted = fav_sorted.reverse()[:5]??
+  nonpcol.drop()
+  nonitem = nonpcol.NonPersonal()
+  nonitem['_id'] = 1
+  nonitem.save()
   for item in fav_sorted:
-    recipe = nonpcol.NonPersonal.find()
+    recipe = nonpcol.NonPersonal.find_one({'_id': 1})
     recipe['top5favorites'].append(int(item[0]))
     recipe.save()
 
