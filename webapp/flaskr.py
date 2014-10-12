@@ -108,7 +108,8 @@ def signup():
 
 @app.route('/user/<login>/cookbook', methods=['GET'])
 def cookbook(login):
-  return render_template('show_entries.html', entries=[], headline="Your cookbook")
+  recipes = Recipe.query.filter(Recipe.userid == login).all()
+  return render_template('show_entries.html', entries=recipes, headline="Your cookbook")
 
 @app.route('/user/<login>/favorites', methods=['GET'])
 def user_favorites(login):
