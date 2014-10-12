@@ -56,8 +56,10 @@ def before_request():
 
 #region routing
 @app.route('/', methods=['GET'])
-def show_entries():
-  return render_template('show_entries.html', entries=Recipe.query.all())
+def show_entries(entries=None, headline="Recipes"):
+  if entries == None:
+    entries=Recipe.query.all()
+  return render_template('show_entries.html', entries=entries, headline="Recipes")
 
 #region user
 @app.route('/user/<login>', methods=['GET', 'POST'])
@@ -103,6 +105,20 @@ def signup():
       error = "User already exists!"
       return render_template('signup.html', error=error)
   return render_template('signup.html', error=error)
+
+@app.route('/user/<login>/cookbook', methods=['GET'])
+def cookbook(login):
+  return render_template('show_entries.html', entries=[], headline="Your cookbook")
+
+@app.route('/user/<login>/favorites', methods=['GET'])
+def user_favorites(login):
+  user = userscol.User.find_one({'_id': login})
+  favorites = user['favorites']
+  q = db_session.query(Recipe)
+  q = q.filter(Recipe.id.in_(favorites))
+  entries = q.all()
+  return render_template('show_profile.html', entries=entries)
+
 #endregion
 
 #region recipe
@@ -116,7 +132,7 @@ def edit(id):
   q = q.filter(Recipe.id == id)
   entry = q.one()
   if entry.userid != session['user_in']:
-    return redirect(url_for('show_entries'))
+    return redirect(url_for('show_entries', headline="Recipes"))
   return render_template('edit.html', entry=entry)
 
 @app.route('/recipe/add_entry', methods=['POST'])
@@ -133,7 +149,7 @@ def add_entry():
   recipemongo['_id'] = recipe.id
   recipemongo.save()
   flash('New entry was successfully posted')
-  return redirect(url_for('show_entries'))
+  return redirect(url_for('show_entries', headline="Recipes"))
 
 @app.route('/recipe/edit_entry', methods=['POST'])
 def edit_entry():
@@ -144,7 +160,7 @@ def edit_entry():
   recipe.text = request.form['text']
   recipe.tags = request.form['tags']
   db_session.commit()
-  return redirect(url_for('show_entries'))
+  return redirect(url_for('show_entries', headline="Recipes"))
 
 @app.route("/recipe/<id>.png")
 def image(id):
@@ -186,15 +202,22 @@ def show_entry(id):
 #endregion
 
 #region recommendations
-@app.route('/top5fav', methods=['GET'])
-def top5fav():
+@app.route('/recommend/topfav', methods=['GET'])
+def topfav():
   recipe = nonpcol.NonPersonal.find_one({'_id':1})
-  print recipe['top5favorites']
+  print recipe['topfavorites']
   q = db_session.query(Recipe)
-  q = q.filter(Recipe.id.in_(recipe['top5favorites']))
+  q = q.filter(Recipe.id.in_(recipe['topfavorites']))
   entries = q.all()
-  print entries
-  return render_template('top5fav.html', entries=entries)
+  return render_template('show_entries.html', entries=entries, headline="Top favorites")
+
+@app.route('/recommend/toprated', methods=['GET'])
+def toprated():
+  return render_template('show_entries.html', entries=[], headline="Top rated")
+
+@app.route('/recommend/', methods=['GET'])
+def recommend():
+  return render_template('show_entries.html', entries=[], headline="Recommended for you")
 #endregion
 #endregion
 

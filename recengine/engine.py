@@ -33,7 +33,7 @@ def mostfavorite():
     fav.append((item.get('_id'),  len(item.get('favorites'))))
   fav_sorted = sorted(fav, key=lambda tup: tup[1])
   fav_sorted.reverse()
-  fav_sorted = fav_sorted[:5]
+  fav_sorted = fav_sorted[:10]
   #alebo fav_sorted = fav_sorted.reverse()[:5]??
   nonpcol.drop()
   nonitem = nonpcol.NonPersonal()
@@ -41,7 +41,7 @@ def mostfavorite():
   nonitem.save()
   for item in fav_sorted:
     recipe = nonpcol.NonPersonal.find_one({'_id': 1})
-    recipe['top5favorites'].append(int(item[0]))
+    recipe['topfavorites'].append(int(item[0]))
     recipe.save()
 
 def recommend():

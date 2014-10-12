@@ -10,7 +10,7 @@ git pull origin master
 
 todo:
 collfi do nedele:
--- 0. Ingrediencie + zobrazenie do tabulky
+-- 0. Ingrediencie + zobrazenie do tabulky v show_recipe, ukladat do monga ingrediencie
 -- // este ti pridam uvidim co stihnem ja vsetko spravit
 
 cospel dalsi tyzden:
@@ -19,3 +19,8 @@ cospel dalsi tyzden:
 -- 2. zobrazenie osobnej favorites stranky pre uzivatela
 -- 3. zobrazenie priemerneho hodnotenia pre recept, pocitanie priemernych hodnoteni s cronom
 -- 4. najoblubenejsie recepty, pocitanie a zobrazenie
+
+ideas:
+-do tagov by mohli ist take veci ako: paleo,diet,italian food,celiac,cheap,raw,...
+-kazdy recept by mal nejaku cenu za ktoru by sa dalo jedlo spravit
+-kazdy recept by bol zaradeny do kategorie receptov, hlavneho jedla, ...
