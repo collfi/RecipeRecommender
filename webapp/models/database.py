@@ -26,14 +26,24 @@ def init_db():
     recipe = Recipe(1, 'admin', 'Mixed eggs', """I wish you'd have given me this written question ahead of time so I
     could plan for it... I'm sure something will pop into my head here in
     the midst of this press conference, with all the pressure of trying to
-    come up with answer, but it hadn't yet...
-
-    I don't want to sound like
+    come up with answer, but it hadn't yet... I don't want to sound like
     I have made no mistakes. I'm confident I have. I just haven't - you
     just put me under the spot here, and maybe I'm not as quick on my feet
-    as I should be in coming up with one.""", 'tag1,tag2', None)
-    recipe2 = Recipe(2, 'collfi', 'Honey rice', 'postup', 'tag1,tag2', None)
-    recipe3 = Recipe(3, 'collfi', 'Roasted beef with chips', 'postup, postup;', 'tag2, tag3, tag4',None)
+    as I should be in coming up with one.""", 'paleo,raw', None)
+    recipe2 = Recipe(2, 'collfi', 'Honey rice', """I wish you'd have given me this written question ahead of time so I
+    could plan for it... I'm sure something will pop into my head here in
+    the midst of this press conference, with all the pressure of trying to
+    come up with answer, but it hadn't yet... I don't want to sound like
+    I have made no mistakes. I'm confident I have. I just haven't - you
+    just put me under the spot here, and maybe I'm not as quick on my feet
+    as I should be in coming up with one.""", 'vegan,raw', None)
+    recipe3 = Recipe(3, 'collfi', 'Roasted beef with chips', """I wish you'd have given me this written question ahead of time so I
+    could plan for it... I'm sure something will pop into my head here in
+    the midst of this press conference, with all the pressure of trying to
+    come up with answer, but it hadn't yet... I don't want to sound like
+    I have made no mistakes. I'm confident I have. I just haven't - you
+    just put me under the spot here, and maybe I'm not as quick on my feet
+    as I should be in coming up with one.""", 'unhealthy,fat',None)
     db_session.add(recipe)
     db_session.add(recipe2)
     db_session.add(recipe3)
