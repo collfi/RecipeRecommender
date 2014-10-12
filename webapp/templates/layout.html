@@ -2,8 +2,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <title>CookBook</title>
+
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='lib/jquery.raty.css') }}">
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='lib/pygment_trac.css') }}">
+
 <script type=text/javascript src="{{ url_for('static', filename='jquery.js') }}"></script>
 <script type=text/javascript src="{{ url_for('static', filename='lib/jquery.raty.js') }}"></script>
 <script src="{{ url_for('static', filename='jQuery-Tags/jquery.tagsinput.js') }}"></script>
@@ -11,27 +14,45 @@
 <script type=text/javascript>
   $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
 </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
 </head>
 <body>
-<div class="page">
-<h1><a href="{{ url_for('show_entries') }}">CookBook</a></h1>
-<div class="metanav">
-{% if not session.logged_in %}
-<a href="{{ url_for('signup') }}">sign up</a>
-<br>
-<a href="{{ url_for('login') }}">log in</a>
-{% else %}
-<a href="{{ url_for('logout') }}">log out</a>
-<br>
-<a href="{{ url_for('show_profile', login=session.user_in) }}">user profile</a>
-<br>
-<a href="{{ url_for('add') }}">Add</a>
-{% endif %}
-</div>
-{% for message in get_flashed_messages() %}
-<div class="flash">{{ message }}</div>
-{% endfor %}
-{% block body %}{% endblock %}
-</div>
+    <div class="wrapper">
+      <header>
+        <h1><a href="{{ url_for('show_entries') }}">CookBook</a></h1>
+        <p>Your personal book with recipes</p>
+           <div class="metanav">
+                {% if not session.logged_in %}
+                <a href="{{ url_for('signup') }}">sign up</a>
+                <br>
+                <a href="{{ url_for('login') }}">log in</a>
+                {% else %}
+                <a href="{{ url_for('logout') }}">log out</a>
+                <br>
+                <a href="{{ url_for('show_profile', login=session.user_in) }}">user profile</a>
+                <br>
+                <a href="{{ url_for('add') }}">Add</a>
+                {% endif %}
+            </div>
+            <br>
+            {% for message in get_flashed_messages() %}
+            <div class="flash">{{ message }}</div>
+            {% endfor %}
+      </header>
+      <section>
+          <div class="page">
+             {% block body %}{% endblock %}
+          </div>
+      </section>
+      <footer>
+        <p>This project is created by <a href="https://github.com/Cospel">Michal Lukac</a> and Boris Valentovic.</p>
+        <p><small>Hosted on GitHub Pages &mdash;<a href="https://github.com/Cospel/RecipeRecommender">RecipeRecommender</a></small></p>
+        <p><small>Theme by <a href="https://github.com/orderedlist">orderedlist</a></small></p>
+      </footer>
+    <script src="javascripts/scale.fix.js"></script>
+    </div>
 </body>
 </html>

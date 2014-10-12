@@ -1,7 +1,6 @@
 {% extends "layout.html" %}
 {% block body %}
+ <h1>Show profile</h1>
  <a href="{{ url_for('show_entries') }}">Back</a>
- <ul class=entries>
-    <li><h2>{{ user.login }}</h2> {{ user.fullname }}<br> {{ user.email }}
- </ul>
+ <h4>{{ user.login }}</h4> {{ user.fullname }}<br> {{ user.email }}
 {% endblock %}

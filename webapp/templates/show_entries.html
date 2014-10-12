@@ -2,15 +2,13 @@
 {% block body %}
   {% if session.logged_in %}
   {% endif %}
-  <ul class=entries>
-      Recipes
+  <h1>Recipes</h1>
   {% for entry in entries %}
-    <li>
     <a href="{{ url_for('show_entry', id=entry.id) }}"><h2>{{ entry.title }}</h2></a>
-    <br>
     from <a href="{{ url_for('show_profile', login=entry.userid) }}">{{ entry.userid }}</a>
+    <br>
+    <br>
   {% else %}
-    <li><em>Unbelievable. No entries here so far</em>
+    <h2><em>Unbelievable. No entries here so far</em></h2>
   {% endfor %}
-  </ul>
 {% endblock %}

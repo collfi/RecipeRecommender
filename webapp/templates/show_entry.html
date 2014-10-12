@@ -1,11 +1,27 @@
 {% extends "layout.html" %}
 {% block body %}
- <a href="{{ url_for('show_entries') }}">Back</a>
- <ul class=entries>
-    <li><a href="{{ url_for('show_entry', id=entry.id) }}" ><h2>{{ entry.title }}</h2></a> {{ entry.text|safe }}<br>
-    <a href="{{ url_for('show_profile', login=entry.userid) }}">{{ entry.userid }}</a><br> <input id="tags" value="{{ entry.tags }}" disabled/>
-    <a href="{{ url_for('image', id=entry.id) }}"><img src="data:image/png;base64,{{ entry.image }}"/></a>
- </ul>
+ <a href="{{ url_for('show_entry', id=entry.id) }}" ><h2>{{ entry.title }}</h2></a>
+ by <a href="{{ url_for('show_profile', login=entry.userid) }}">{{ entry.userid }}</a><br>
+ <a href="{{ url_for('show_entries') }}">Back</a><br>
+ <br><blockquote>{{ entry.text|safe }}</blockquote><br>
+ {% if entry.image %}
+ <a href="{{ url_for('image', id=entry.id) }}"><img src="data:image/png;base64,{{ entry.image }}"/></a>
+ {% endif %}
+ <h3>Ingredients</h3>
+ <table>
+    <tbody>
+    <tr>
+        <th>Name</th><th>Weight</th>
+    </tr>
+    <tr>
+        <td>Eggs</td><td>5</td>
+    </tr>
+    <tr>
+        </td><td>Salt</td><td>100g</td>
+    </tr>
+    </tbody>
+ </table>
+ <br> <div class="highlight" ><pre>{{ entry.tags }}</pre></div>
  <script>
 $(document).ready(function(){
     $('#tags').tagsInput({

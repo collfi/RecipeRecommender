@@ -23,9 +23,17 @@ def init_db():
     db_session.add(user2)
     db_session.add(user3)
     db_session.commit()
-    recipe = Recipe(1, 'admin', 'prazenica', 'postup', 'tag1,tag2', None)
-    recipe2 = Recipe(2, 'collfi', 'ryza', 'postup', 'tag1,tag2', None)
-    recipe3 = Recipe(3, 'collfi', 'dobrota', 'postup, postup;', 'tag2, tag3, tag4',None)
+    recipe = Recipe(1, 'admin', 'Mixed eggs', """I wish you'd have given me this written question ahead of time so I
+    could plan for it... I'm sure something will pop into my head here in
+    the midst of this press conference, with all the pressure of trying to
+    come up with answer, but it hadn't yet...
+
+    I don't want to sound like
+    I have made no mistakes. I'm confident I have. I just haven't - you
+    just put me under the spot here, and maybe I'm not as quick on my feet
+    as I should be in coming up with one.""", 'tag1,tag2', None)
+    recipe2 = Recipe(2, 'collfi', 'Honey rice', 'postup', 'tag1,tag2', None)
+    recipe3 = Recipe(3, 'collfi', 'Roasted beef with chips', 'postup, postup;', 'tag2, tag3, tag4',None)
     db_session.add(recipe)
     db_session.add(recipe2)
     db_session.add(recipe3)

@@ -1,6 +1,7 @@
 {% extends "layout.html" %}
 {% block body %}
   {% if session.logged_in %}
+    <h2>Edit recipe</h2>
     <form action="{{ url_for('edit_entry') }}" method=post class=add-entry>
       <dl>
         <dt>Title:
