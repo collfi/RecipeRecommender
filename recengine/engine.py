@@ -44,8 +44,36 @@ def mostfavorite():
     recipe['topfavorites'].append(int(item[0]))
     recipe.save()
 
+def averagerating():
+  fav = []
+  for item in recipecol.Recipe.find():
+    idrecipe = item.get('_id')
+    sum = 0.0; count = 0
+    # compute average for specified item
+    for item in userscol.User.find({'ratings':{'$elemMatch':{'itemid':idrecipe}}},{'ratings.$':1}):
+      sum = sum + item.get('ratings')[0]['value']
+      count = count +1
+    try:
+      average = float(sum/float(count))
+      # and now save to db
+      # find the item in our sqldb and update and save it
+      q = db_session.query(Recipe).filter(Recipe.id == idrecipe)
+      recipe = q.one()
+      recipe.avgrating = average
+      db_session.commit()
+    except:
+      #if it is exception division by zero, just skip it
+      pass
+
+#fav.append((item.get('_id'), len(item.get('favorites'))))
+
+
+
+
 def recommend():
-  print "z tejto funkcie sa budu volat vsetky funkcie na vypocty a ukladanie do db"
+  print "1. computing most favorite items"
   mostfavorite()
+  print "2. computing average ratings for items"
+  averagerating()
 
 recommend()

@@ -10,7 +10,7 @@
     </tr>
     {% for entry in entries %}
     <tr>
-        <td><a href="{{ url_for('show_entry', id=entry.id) }}">{{ entry.title }}</a></td><td><a href="{{ url_for('show_profile', login=entry.userid) }}">{{ entry.userid }}</a></td><td>1</td>
+        <td><a href="{{ url_for('show_entry', id=entry.id) }}">{{ entry.title }}</a></td><td><a href="{{ url_for('show_profile', login=entry.userid) }}">{{ entry.userid }}</a></td><td>{{ entry.avgrating }}</td>
     </tr>
     {% else %}
     <tr>
