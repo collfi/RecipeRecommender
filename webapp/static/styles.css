@@ -174,11 +174,11 @@ header ul a:active {
   box-shadow: inset 0px 2px 2px 0px #ddd;
 }
 
-.recipetitle {
+.leftclass {
   float: left;
 }
 
-.reciperating {
+.rightclass {
   float: right;
 }
 

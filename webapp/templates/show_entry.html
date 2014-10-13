@@ -1,14 +1,18 @@
 {% extends "layout.html" %}
 {% block body %}
  <div id="title">
-     <h2 class="recipetitle"><a href="{{ url_for('show_entry', id=entry.id) }}" >{{ entry.title }}</a></h2>
-     <h3 class="reciperating">{{ entry.avgrating }}/5</h3>
+     <h2 class="leftclass"><a href="{{ url_for('show_entry', id=entry.id) }}" >{{ entry.title }}</a></h2>
+     <h3 class="rightclass">{{ entry.avgrating }}/5</h3>
  </div>
-        <br>
-        <br>
-        <br>
+        <br/>
+        <br/>
+        <br/>
 <div>
  by <a href="{{ url_for('show_profile', login=entry.userid) }}">{{ entry.userid }}</a><br>
+     {% if canedit %}
+ <a href="{{ url_for('edit', id=entry.id) }}">Edit</a>
+ {% endif %}
+
  <a href="{{ url_for('show_entries') }}">Back</a><br>
  <br><blockquote>{{ entry.text|safe }}</blockquote><br>
  {% if entry.image %}
@@ -91,17 +95,15 @@ $(document).ready(function(){
 </script>
  <div>
     {% if favorited %}
-    <img id="favorite" favorited="0" src="{{ url_for('static', filename='images/removedoc.png') }}"/>
+    <img id="favorite" class="leftclass" favorited="0" src="{{ url_for('static', filename='images/removedoc.png') }}"/>
     {% else %}
-    <img id="favorite" favorited="1" src="{{ url_for('static', filename='images/adddoc.png') }}"/>
+    <img id="favorite" class="leftclass" favorited="1" src="{{ url_for('static', filename='images/adddoc.png') }}"/>
     {% endif %}
-    <div id="ratings" path="{{ url_for('static', filename='lib/images/') }}"></div>
+    <div id="ratings" class="rightclass" path="{{ url_for('static', filename='lib/images/') }}"></div>
  </div>
- {% if canedit %}
- <a href="{{ url_for('edit', id=entry.id) }}">Edit</a>
- {% endif %}
-
- <br/>
+    <br/>
+    <br/>
+    <br/>
  <h3>Similar recipes</h3>
  <table class="colors">
     <tbody>
