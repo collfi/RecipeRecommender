@@ -158,6 +158,13 @@ header ul a {
   height:34px;
 }
 
+#search {
+  background: #f8f8f8;
+  border: 1px solid white;
+  height: 100px;
+  border-radius: 15px;
+}
+
 header ul a:hover {
   color:#999;
   background: -moz-linear-gradient(top, #fff 0%, #ddd 100%);

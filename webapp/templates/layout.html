@@ -30,6 +30,8 @@
                 <br>
                 <a href="{{ url_for('login') }}">log in</a>
                 {% else %}
+                <a href="#">Search</a>
+                <br>
                 <a href="{{ url_for('logout') }}">log out</a>
                 <br>
                 <a href="{{ url_for('show_profile', login=session.user_in) }}">user profile</a>
@@ -56,6 +58,10 @@
       </header>
       <section>
           <div class="page">
+             {% if search %}
+             <div id="search">something like lunchtime</div>
+             <br/>
+             {% endif %}
              {% block body %}{% endblock %}
           </div>
       </section>
