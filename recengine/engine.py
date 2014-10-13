@@ -67,7 +67,12 @@ def averagerating():
 
 #fav.append((item.get('_id'), len(item.get('favorites'))))
 
-
+def bestrated():
+  recipes = Recipe.query.order_by(Recipe.avgrating.desc()).limit(2).all()
+  for item in recipes:
+      recipe=nonpcol.NonPersonal.find_one({'_id':1})
+      recipe['toprated'].append(int(item.id))
+      recipe.save()
 
 
 def recommend():
@@ -75,5 +80,7 @@ def recommend():
   mostfavorite()
   print "2. computing average ratings for items"
   averagerating()
+  print "3. computing best rated items"
+  bestrated()
 
 recommend()

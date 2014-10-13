@@ -206,7 +206,6 @@ def show_entry(id):
 @app.route('/recommend/topfav', methods=['GET'])
 def topfav():
   recipe = nonpcol.NonPersonal.find_one({'_id':1})
-  print recipe['topfavorites']
   q = db_session.query(Recipe)
   q = q.filter(Recipe.id.in_(recipe['topfavorites']))
   entries = q.all()
@@ -214,7 +213,11 @@ def topfav():
 
 @app.route('/recommend/toprated', methods=['GET'])
 def toprated():
-  return render_template('show_entries.html', entries=[], headline="Top rated")
+  recipe = nonpcol.NonPersonal.find_one({'_id':1})
+  q = db_session.query(Recipe)
+  q = q.filter(Recipe.id.in_(recipe['toprated']))
+  entries = q.all()
+  return render_template('show_entries.html', entries=entries, headline="Top rated")
 
 @app.route('/recommend/', methods=['GET'])
 def recommend():

@@ -47,7 +47,8 @@ class Recipe(Document):
 class NonPersonal(Document):
   structure = {
       # ids of top5favorites recipes
-      'topfavorites' : [ int ]
+      'topfavorites' : [ int ],
+      'toprated' : [ int ]
   }
   use_dot_notation = True
 

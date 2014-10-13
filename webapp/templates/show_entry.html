@@ -21,7 +21,7 @@
     </tr>
     </tbody>
  </table>
- <br> <div class="highlight" ><pre>{{ entry.tags }}</pre></div>
+ <br> <div class="highlight" ><pre><span class="s1">{{ entry.tags }}</span></pre></div>
  <script>
 $(document).ready(function(){
     $('#tags').tagsInput({
@@ -82,13 +82,32 @@ $(document).ready(function(){
   });
 });
 </script>
-{% if favorited %}
- <img id="favorite" favorited="0" src="{{ url_for('static', filename='images/removedoc.png') }}"/>
-{% else %}
- <img id="favorite" favorited="1" src="{{ url_for('static', filename='images/adddoc.png') }}"/>
-{% endif %}
-<div id="ratings" path="{{ url_for('static', filename='lib/images/') }}"></div>
+ <div>
+    {% if favorited %}
+    <img id="favorite" favorited="0" src="{{ url_for('static', filename='images/removedoc.png') }}"/>
+    {% else %}
+    <img id="favorite" favorited="1" src="{{ url_for('static', filename='images/adddoc.png') }}"/>
+    {% endif %}
+    <div id="ratings" path="{{ url_for('static', filename='lib/images/') }}"></div>
+ </div>
  {% if canedit %}
  <a href="{{ url_for('edit', id=entry.id) }}">Edit</a>
  {% endif %}
+
+ <br/>
+ <h3>Similar recipes</h3>
+ <table class="colors">
+    <tbody>
+    <tr>
+        <th>Name</th><th>Rating</th>
+    </tr>
+    <tr>
+        <td>Recipe 1</td><td>5</td>
+    </tr>
+    <tr>
+        </td><td>Recipe 2</td><td>2</td>
+    </tr>
+    </tbody>
+ </table>
+
 {% endblock %}
