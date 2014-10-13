@@ -59,7 +59,7 @@ def before_request():
 def show_entries(entries=None, headline="Recipes"):
   if entries == None:
     entries=Recipe.query.all()
-  return render_template('show_entries.html', entries=entries, headline="Recipes", search=False)
+  return render_template('show_entries.html', entries=entries, headline="Recipes")
 
 #region user
 @app.route('/user/<login>', methods=['GET', 'POST'])

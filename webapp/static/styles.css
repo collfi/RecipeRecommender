@@ -159,10 +159,10 @@ header ul a {
 }
 
 #search {
-  background: #f8f8f8;
-  border: 1px solid white;
-  height: 100px;
-  border-radius: 15px;
+  background: white;
+  border: 1px solid #e5e5e5;
+  height: 150px;
+  /*border-radius: 15px;*/
 }
 
 header ul a:hover {
