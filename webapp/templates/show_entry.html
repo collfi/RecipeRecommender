@@ -1,6 +1,13 @@
 {% extends "layout.html" %}
 {% block body %}
- <a href="{{ url_for('show_entry', id=entry.id) }}" ><h2>{{ entry.title }}</h2></a>
+ <div id="title">
+     <h2 class="recipetitle"><a href="{{ url_for('show_entry', id=entry.id) }}" >{{ entry.title }}</a></h2>
+     <h3 class="reciperating">{{ entry.avgrating }}/5</h3>
+ </div>
+        <br>
+        <br>
+        <br>
+<div>
  by <a href="{{ url_for('show_profile', login=entry.userid) }}">{{ entry.userid }}</a><br>
  <a href="{{ url_for('show_entries') }}">Back</a><br>
  <br><blockquote>{{ entry.text|safe }}</blockquote><br>
@@ -109,5 +116,5 @@ $(document).ready(function(){
     </tr>
     </tbody>
  </table>
-
+</div>
 {% endblock %}
