@@ -1,11 +1,12 @@
 from mongokit import Connection
 import sys
 # i need to add this because of imports
-sys.path.append('/home/michal/Desktop/recsys/RecipeRecommender/')
+sys.path.append('/home/michal/Desktop/RECSYS/RecipeRecommender/')
 #sys.path.append('/home/collfi/RecSys/RecipeRecommender/')
 from sqlalchemy import and_
 from webapp.models import recommender
 from datetime import datetime
+
 import base64
 import json
 
@@ -68,12 +69,24 @@ def averagerating():
 #fav.append((item.get('_id'), len(item.get('favorites'))))
 
 def bestrated():
-  recipes = Recipe.query.order_by(Recipe.avgrating.desc()).limit(2).all()
+  recipes = Recipe.query.order_by(Recipe.avgrating.desc()).limit(15).all()
   for item in recipes:
-      recipe=nonpcol.NonPersonal.find_one({'_id':1})
-      recipe['toprated'].append(int(item.id))
-      recipe.save()
+    recipe=nonpcol.NonPersonal.find_one({'_id':1})
+    recipe['toprated'].append(int(item.id))
+    recipe.save()
 
+# hackernews like interested
+def interestingnow():
+  for item in recipecol.Recipe.find():
+    hours = abs(datetime.now() - item.get('date_creation')).total_seconds() / 3600.0
+    score = calculate_score(len(item.get('favorites')), hours)
+    q = db_session.query(Recipe).filter(Recipe.id == item.get('_id'))
+    recipe = q.one()
+    recipe.interested = score
+
+#http://amix.dk/blog/post/19574
+def calculate_score(votes, item_hour_age, gravity=1.8):
+  return (votes + 1) / pow((item_hour_age+2), gravity)
 
 def recommend():
   print "1. computing most favorite items"
@@ -82,5 +95,7 @@ def recommend():
   averagerating()
   print "3. computing best rated items"
   bestrated()
+  print "4. computing interesting with hacker news formula"
+  interestingnow()
 
 recommend()

@@ -1,6 +1,7 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, DateTime
 from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
+import time
 
 engine = create_engine('sqlite:////tmp/recsys.db', convert_unicode=True)
 db_session = scoped_session(sessionmaker(autocommit=False,
@@ -43,7 +44,7 @@ def init_db():
     come up with answer, but it hadn't yet... I don't want to sound like
     I have made no mistakes. I'm confident I have. I just haven't - you
     just put me under the spot here, and maybe I'm not as quick on my feet
-    as I should be in coming up with one.""", 'unhealthy,fat',None)
+    as I should be in coming up with one.""", 'unhealthy,fat', None)
     db_session.add(recipe)
     db_session.add(recipe2)
     db_session.add(recipe3)

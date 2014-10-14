@@ -221,9 +221,14 @@ def toprated():
   entries = q.all()
   return render_template('show_entries.html', entries=entries, headline="Top rated")
 
-@app.route('/recommend/', methods=['GET'])
+@app.route('/recommend', methods=['GET'])
 def recommend():
   return render_template('show_entries.html', entries=[], headline="Recommended for you")
+
+@app.route('/interesting', methods=['GET'])
+def interesting():
+  recipes = Recipe.query.order_by(Recipe.interested.desc()).limit(15).all()
+  return render_template('show_entries.html', entries=recipes, headline="Interesting")
 #endregion
 #endregion
 

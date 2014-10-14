@@ -33,9 +33,12 @@ class Recipe(Document):
   structure = {
     # _id is id of recipe
     #favorites is list of user ids
+    'date_creation' : datetime,
     'favorites' : [ unicode ],
     'ingredients' : [{'ingredient':unicode, 'number': unicode}]
   }
+  default_values = {'date_creation':datetime.now()}
+
   use_dot_notation = True
   def print_favorites(self):
     print "favorites:", self.favorites
@@ -48,7 +51,7 @@ class NonPersonal(Document):
   structure = {
       # ids of top5favorites recipes
       'topfavorites' : [ int ],
-      'toprated' : [ int ]
+      'toprated' : [ int ],
   }
   use_dot_notation = True
 
