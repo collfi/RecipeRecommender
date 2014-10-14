@@ -9,13 +9,13 @@ git pull // zobranie zo serveru
 git pull origin master
 
 todo:
-collfi do nedele:
+collfi do nedele 19.10:
 -- 0. Ingrediencie + zobrazenie do tabulky v show_recipe, ukladat do monga ingrediencie, vyuzit nejaku dobru jquery table
 
-cospel dalsi tyzden:
+cospel do nedele 19.10:
 -- 0. DONE novy layout
 -- 1. DONE zobrazenie top5favorites
--- 2. zobrazenie osobnej favorites stranky pre uzivatela
+-- 2. DONE zobrazenie osobnej favorites stranky pre uzivatela
 -- 3. DONE zobrazenie priemerneho hodnotenia pre recept, pocitanie priemernych hodnoteni s cronom
 -- 4. DONE najoblubenejsie recepty, pocitanie a zobrazenie
 
