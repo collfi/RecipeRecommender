@@ -10,8 +10,7 @@ git pull origin master
 
 todo:
 collfi do nedele:
--- 0. Ingrediencie + zobrazenie do tabulky v show_recipe, ukladat do monga ingrediencie
--- // este ti pridam uvidim co stihnem ja vsetko spravit
+-- 0. Ingrediencie + zobrazenie do tabulky v show_recipe, ukladat do monga ingrediencie, vyuzit nejaku dobru jquery table
 
 cospel dalsi tyzden:
 -- 0. DONE novy layout

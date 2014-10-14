@@ -3,7 +3,7 @@
 
 from mongokit import Connection
 from flask import Flask, request, session, flash, redirect, url_for, render_template, make_response
-from sqlalchemy import and_
+from sqlalchemy import and_, or_
 from models import recommender
 from datetime import datetime
 import base64
@@ -108,7 +108,9 @@ def signup():
 
 @app.route('/user/<login>/cookbook', methods=['GET'])
 def cookbook(login):
-  recipes = Recipe.query.filter(Recipe.userid == login).all()
+  user = userscol.User.find_one({'_id':login})
+  favorites = user['favorites']
+  recipes = Recipe.query.filter(or_(Recipe.userid == login, Recipe.id.in_(favorites))).all()
   return render_template('show_entries.html', entries=recipes, headline="Your cookbook")
 
 @app.route('/user/<login>/favorites', methods=['GET'])
