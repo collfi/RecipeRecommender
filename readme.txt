@@ -18,10 +18,11 @@ cospel dalsi tyzden:
 -- 1. DONE zobrazenie top5favorites
 -- 2. zobrazenie osobnej favorites stranky pre uzivatela
 -- 3. DONE zobrazenie priemerneho hodnotenia pre recept, pocitanie priemernych hodnoteni s cronom
--- 4. najoblubenejsie recepty, pocitanie a zobrazenie
+-- 4. DONE najoblubenejsie recepty, pocitanie a zobrazenie
 
 ideas:
 -vsetko hadzat do monga???
 -do tagov by mohli ist take veci ako: paleo,diet,italian food,celiac,cheap,raw,...
 -kazdy recept by mal nejaku cenu za ktoru by sa dalo jedlo spravit
 -kazdy recept by bol zaradeny do kategorie receptov, hlavneho jedla, ...
+-http://amix.dk/blog/post/19588 spravit page interesting ktore by vyuzivali favorites
