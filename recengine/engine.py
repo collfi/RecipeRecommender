@@ -1,3 +1,4 @@
+#region import
 from mongokit import Connection
 import sys
 # i need to add this because of imports
@@ -6,9 +7,7 @@ sys.path.append('/home/michal/Desktop/RECSYS/RecipeRecommender/')
 from sqlalchemy import and_
 from webapp.models import recommender
 from datetime import datetime
-
-import base64
-import json
+#endregion
 
 #region database
 # this is our sqlalchemy orm which works with our
@@ -26,7 +25,13 @@ mconnection.register([recommender.NonPersonal])
 userscol = mconnection['recsys'].users
 recipecol = mconnection['recsys'].recipes
 nonpcol = mconnection['recsys'].nonpersonal
+#endregion
 
+#region computing
+#region nonpersonalized
+
+# Computing simple most favorite items as number of favorites
+# and then save it to nonpcol document to 'topfavorites'
 def mostfavorite():
   fav = []
   for item in recipecol.Recipe.find():
@@ -45,6 +50,9 @@ def mostfavorite():
     recipe['topfavorites'].append(int(item[0]))
     recipe.save()
 
+# Computing average ratings for every recipe
+# and then save it to sql database to recipe
+# this function precomputes average ratings for bestrated function
 def averagerating():
   fav = []
   for item in recipecol.Recipe.find():
@@ -66,8 +74,8 @@ def averagerating():
       #if it is exception division by zero, just skip it
       pass
 
-#fav.append((item.get('_id'), len(item.get('favorites'))))
-
+# get best items from sql and save it to our
+# document database.
 def bestrated():
   recipes = Recipe.query.order_by(Recipe.avgrating.desc()).limit(15).all()
   for item in recipes:
@@ -75,18 +83,21 @@ def bestrated():
     recipe['toprated'].append(int(item.id))
     recipe.save()
 
-# hackernews like interested
-def interestingnow():
+# hackernews like interested, #http://amix.dk/blog/post/19574
+# compute interesting items right now by votes/favorites
+def hackernews_interesting():
   for item in recipecol.Recipe.find():
     hours = abs(datetime.now() - item.get('date_creation')).total_seconds() / 3600.0
-    score = calculate_score(len(item.get('favorites')), hours)
+    score = hackernews_score(len(item.get('favorites')), hours)
     q = db_session.query(Recipe).filter(Recipe.id == item.get('_id'))
     recipe = q.one()
     recipe.interested = score
 
-#http://amix.dk/blog/post/19574
-def calculate_score(votes, item_hour_age, gravity=1.8):
+def hackernews_score(votes, item_hour_age, gravity=1.8):
   return (votes + 1) / pow((item_hour_age+2), gravity)
+#endregion
+
+#endregion
 
 def recommend():
   print "1. computing most favorite items"
@@ -96,6 +107,6 @@ def recommend():
   print "3. computing best rated items"
   bestrated()
   print "4. computing interesting with hacker news formula"
-  interestingnow()
+  hackernews_interesting()
 
 recommend()
