@@ -1,6 +1,25 @@
 {% extends "layout.html" %}
 {% block body %}
   {% if session.logged_in %}
+<!-- SheepIt! - ingredients plugin -->
+<script type=text/javascript src="{{ url_for('static', filename='sheepItPlugin.js') }}"></script>
+<script>
+$(document).ready(function() {
+
+    var sheepItForm = $('#sheepItForm').sheepIt({
+        separator: '',
+        allowRemoveLast: true,
+        allowRemoveCurrent: true,
+        allowRemoveAll: false,
+        allowAdd: true,
+        maxFormsCount: 20,
+        minFormsCount: 1,
+        iniFormsCount: 1
+    });
+
+});
+</script>
+
     <h1>Add recipe</h1>
     <form action="{{ url_for('add_entry') }}" method=post enctype=multipart/form-data class=add-entry>
       <dl>
@@ -15,10 +34,43 @@
 
         <dt>Picture:
         <dd><input type=file size=50 name=file>
+
+        <!-- TODO: zmenit mena, cez vlastnosti? -->
+        <!-- sheepIt Form -->
+        <div id="sheepItForm">
+
+          <!-- Form template-->
+          <div id="sheepItForm_template">
+            <label for="sheepItForm_#index#_phone">Ingredient</label>
+            <input id="sheepItForm_#index#_phone" name="ingredient_#index#" type="text"/>
+              <label for="sheepItForm_#index#_phone2">Amount</label>
+              <input id="sheepItForm_#index#_phone2" name="amount_#index#" type="text" size="15"/>
+            <a id="sheepItForm_remove_current">
+              <img class="delete" src="{{ url_for('static', filename='images/cross.png') }}" width="16" height="16" border="0">
+            </a>
+          </div>
+          <!-- /Form template-->
+
+          <!-- No forms template -->
+          <div id="sheepItForm_noforms_template">No phones</div>
+          <!-- /No forms template-->
+
+          <!-- Controls -->
+          <div id="sheepItForm_controls">
+            <div id="sheepItForm_add"><a><span>Add ingredient</span></a></div>
+            <div id="sheepItForm_remove_last"><a><span>Remove</span></a></div>
+          <!-- /Controls -->
+
+          </div>
+        <!-- /sheepIt Form -->
+        </div>
+
+
+
+
         <dd><input type=submit value=Share>
       </dl>
     </form>
-
     <!--<input name="tags" id="tags" value="tag1,tag2,tag3" />
     <script>$('#tags').tagsInput();</script>-->
   {% endif %}

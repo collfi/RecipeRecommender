@@ -134,9 +134,12 @@ def edit(id):
   q = db_session.query(Recipe)
   q = q.filter(Recipe.id == id)
   entry = q.one()
+  rec = recipecol.Recipe.find_one({'_id': int(id)})
+  max = len(rec.get('ingredients'))
+
   if entry.userid != session['user_in']:
     return redirect(url_for('show_entries', headline="Recipes"))
-  return render_template('edit.html', entry=entry)
+  return render_template('edit.html', entry=entry, rec=rec, max=max)
 
 @app.route('/recipe/add_entry', methods=['POST'])
 def add_entry():
@@ -151,6 +154,22 @@ def add_entry():
   recipemongo = recipecol.Recipe()
   recipemongo['_id'] = recipe.id
   recipemongo.save()
+  # get ingredients
+  count = 0
+  nextIng = True
+  while nextIng:
+    if 'ingredient_' + str(count) in request.form:
+      name = request.form['ingredient_' + str(count)]
+      amount =request.form['amount_' + str(count)]
+      count += 1
+      #!!! Preco toto nejde? ale ked to je v inej premennej tak to ide???
+      #recipemongo['ingredients'].append({'ingredient': unicode(request.form['ingredient_' + unicode(count)]),
+      #                                  'number': unicode(request.form['amount_' + unicode(count)])})
+      recipemongo['ingredients'].append({'ingredient': name, 'number': amount})
+      recipemongo.save()
+    else:
+      print ("no more ingredients")
+      nextIng = False
   flash('New entry was successfully posted')
   return redirect(url_for('show_entries', headline="Recipes"))
 
@@ -163,6 +182,26 @@ def edit_entry():
   recipe.text = request.form['text']
   recipe.tags = request.form['tags']
   db_session.commit()
+  #---------------------------------
+  recipemongo = recipecol.Recipe.find_one({'_id': int(recipe.id)})
+  recipemongo['ingredients'] = []
+  # get ingredients
+  count = 0
+  nextIng = True
+  while nextIng:
+    if 'ingredient_' + str(count) in request.form: #a sucasne aj amount!!! + aj do add() -- alebo skor osefovat ze musi zadat
+      name = request.form['ingredient_' + str(count)]
+      amount = request.form['amount_' + str(count)]
+      count += 1
+      #!!! Preco toto nejde? ale ked to je v inej premennej tak to ide???
+      #recipemongo['ingredients'].append({'ingredient': unicode(request.form['ingredient_' + unicode(count)]),
+      #                                  'number': unicode(request.form['amount_' + unicode(count)])})
+      recipemongo['ingredients'].append({'ingredient': name, 'number': amount})
+      recipemongo.save()
+    else:
+      print ("no more ingredients")
+      nextIng = False
+  #---------------------------------
   return redirect(url_for('show_entries', headline="Recipes"))
 
 @app.route("/recipe/<id>.png")
@@ -265,9 +304,9 @@ def rate():
       user['ratings'].append({'itemid': data['itemid'], 'value': float(data['rating']), 'date_creation': datetime.now()})
       user.save()
       #user.print_ratings()
-      return json.dumps({'status':'OK'})
+      return json.dumps({'status': 'OK'})
     except:
-      return json.dumps({'status':'ERR'})
+      return json.dumps({'status': 'ERR'})
 
 #endregion
 #endregion

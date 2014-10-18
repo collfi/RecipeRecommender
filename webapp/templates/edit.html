@@ -1,5 +1,69 @@
 {% extends "layout.html" %}
 {% block body %}
+<!-- SheepIt! - ingredients plugin -->
+<script type=text/javascript src="{{ url_for('static', filename='sheepItPlugin.js') }}"></script>
+<script>
+$(document).ready(function() {
+var a = 0;
+var r = {{ rec.get('ingredients') }};
+var dat = [
+            {
+                // If you respect the pattern, you can pass only phone and other information will be deduced
+                'sheepItForm_#index#_phone':  '{{ rec.get('ingredients')[0].get('ingredient').encode('utf-8') }}',
+                'sheepItForm_#index#_phone2': '{{ rec.get('ingredients')[0].get('number').encode('utf-8') }}'
+            }
+        ];
+
+ dat.push( {
+            'sheepItForm_#index#_phone':  '{{ rec.get('ingredients')[1].get('ingredient').encode('utf-8') }}',
+                'sheepItForm_#index#_phone2': '{{ rec.get('ingredients')[1].get('number').encode('utf-8') }}'
+            }
+);
+
+var i = 3;
+while (i < {{ max }}) {
+    dat.push( {
+
+            'sheepItForm_#index#_phone':  '{{ rec.get('ingredients')[1].get('ingredient').encode('utf-8') }}',
+                'sheepItForm_#index#_phone2': '{{ rec.get('ingredients')[1].get('number').encode('utf-8') }}'
+            }
+);
+i++;
+}
+
+
+
+    var sheepItForm = $('#sheepItForm').sheepIt({
+
+        separator: '',
+        allowRemoveLast: true,
+        allowRemoveCurrent: true,
+        allowRemoveAll: false,
+        allowAdd: true,
+        maxFormsCount: 20,
+        minFormsCount: 1,
+        iniFormsCount: {{ max }},
+        data: dat/*[
+            {
+                // If you respect the pattern, you can pass only phone and other information will be deduced
+                'sheepItForm_#index#_phone':  '{{ rec.get('ingredients')[0].get('ingredient').encode('utf-8') }}',
+                'sheepItForm_#index#_phone2': '{{ rec.get('ingredients')[0].get('number').encode('utf-8') }}'
+            },
+            {
+
+            },
+            {
+
+            }
+
+
+        ]*/
+    })  ;
+
+});
+
+
+</script>
   {% if session.logged_in %}
     <h2>Edit recipe</h2>
     <form action="{{ url_for('edit_entry') }}" method=post class=add-entry>
@@ -14,6 +78,38 @@
         <script>$('#tags').tagsInput();</script>
 
         <dd><input type=hidden name=id value={{ entry.id }}>
+<!-- TODO: zmenit mena, cez vlastnosti? -->
+        <!-- sheepIt Form -->
+        <div id="sheepItForm">
+
+          <!-- Form template-->
+          <div id="sheepItForm_template">
+            <label for="sheepItForm_#index#_phone">Ingredient</label>
+            <input id="sheepItForm_#index#_phone" name="ingredient_#index#" type="text" />
+              <label for="sheepItForm_#index#_phone2">Amount</label>
+              <input id="sheepItForm_#index#_phone2" name="amount_#index#" type="text" size="15"/>
+            <a id="sheepItForm_remove_current">
+              <img class="delete" src="{{ url_for('static', filename='images/cross.png') }}" width="16" height="16" border="0">
+            </a>
+          </div>
+          <!-- /Form template-->
+
+          <!-- No forms template -->
+          <div id="sheepItForm_noforms_template">No phones</div>
+          <!-- /No forms template-->
+
+          <!-- Controls -->
+          <div id="sheepItForm_controls">
+            <div id="sheepItForm_add"><a><span>Add ingredient</span></a></div>
+            <div id="sheepItForm_remove_last"><a><span>Remove</span></a></div>
+          <!-- /Controls -->
+
+          </div>
+        <!-- /sheepIt Form -->
+        </div>
+
+<h4> {{ rec.get('ingredients')[3]  }} </h4>
+          <h4> {{ rec.get('ingredients')[1].get('ingredient').encode('utf-8') }}</h4>
         <dd><input type=submit value=Update>
       </dl>
     </form>
