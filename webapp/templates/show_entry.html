@@ -20,17 +20,19 @@
  {% endif %}
  <h3>Ingredients</h3>
  <table class="colors">
+
     <tbody>
     <tr>
-        <th>Name</th><th>Amount</th>
+      <th>Name</th><th>Amount</th>
     </tr>
+     {% for item in rec.ingredients %}
     <tr>
-        <td>Eggs</td><td>5</td>
+      <td>{{ item.ingredient }}</td><td>{{ item.number }}</td>
     </tr>
-    <tr>
-        </td><td>Salt</td><td>100g</td>
-    </tr>
+    {% endfor %}
+
     </tbody>
+
  </table>
  <br> <div class="highlight" ><pre><span class="s1">{{ entry.tags }}</span></pre></div>
  <script>

@@ -162,9 +162,6 @@ def add_entry():
       name = request.form['ingredient_' + str(count)]
       amount =request.form['amount_' + str(count)]
       count += 1
-      #!!! Preco toto nejde? ale ked to je v inej premennej tak to ide???
-      #recipemongo['ingredients'].append({'ingredient': unicode(request.form['ingredient_' + unicode(count)]),
-      #                                  'number': unicode(request.form['amount_' + unicode(count)])})
       recipemongo['ingredients'].append({'ingredient': name, 'number': amount})
       recipemongo.save()
     else:
@@ -230,6 +227,8 @@ def show_entry(id):
   #a ja som dal nieco take ako rated.get('ratings')[0].get('value')??
   value = 0
 
+  rec = recipecol.Recipe.find_one({'_id': int(id)})
+
   if rated:
     for item in rated.get('ratings'):
         if item.get('itemid') == int(id):
@@ -240,7 +239,7 @@ def show_entry(id):
       favorited = True
   if entry.userid == session['user_in']:
       canedit = True
-  return render_template('show_entry.html', entry=entry, canedit=canedit, favorited=favorited, value=value)
+  return render_template('show_entry.html', entry=entry, canedit=canedit, favorited=favorited, value=value, rec=rec)
 #endregion
 
 #region recommendations

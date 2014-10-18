@@ -4,35 +4,15 @@
 <script type=text/javascript src="{{ url_for('static', filename='sheepItPlugin.js') }}"></script>
 <script>
 $(document).ready(function() {
-var a = 0;
-var r = {{ rec.get('ingredients') }};
-var dat = [
-            {
-                // If you respect the pattern, you can pass only phone and other information will be deduced
-                'sheepItForm_#index#_phone':  '{{ rec.get('ingredients')[0].get('ingredient').encode('utf-8') }}',
-                'sheepItForm_#index#_phone2': '{{ rec.get('ingredients')[0].get('number').encode('utf-8') }}'
-            }
-        ];
-
- dat.push( {
-            'sheepItForm_#index#_phone':  '{{ rec.get('ingredients')[1].get('ingredient').encode('utf-8') }}',
-                'sheepItForm_#index#_phone2': '{{ rec.get('ingredients')[1].get('number').encode('utf-8') }}'
+var b = {{ rec.get('ingredients')|tojson }};
+var dat = [];
+for (i = 0; i < {{ max }}; i++) {
+         dat.push( {
+            'ingredient_#index#':  b[i].ingredient,
+            'amount_#index#': b[i].number
             }
 );
-
-var i = 3;
-while (i < {{ max }}) {
-    dat.push( {
-
-            'sheepItForm_#index#_phone':  '{{ rec.get('ingredients')[1].get('ingredient').encode('utf-8') }}',
-                'sheepItForm_#index#_phone2': '{{ rec.get('ingredients')[1].get('number').encode('utf-8') }}'
-            }
-);
-i++;
 }
-
-
-
     var sheepItForm = $('#sheepItForm').sheepIt({
 
         separator: '',
@@ -43,21 +23,7 @@ i++;
         maxFormsCount: 20,
         minFormsCount: 1,
         iniFormsCount: {{ max }},
-        data: dat/*[
-            {
-                // If you respect the pattern, you can pass only phone and other information will be deduced
-                'sheepItForm_#index#_phone':  '{{ rec.get('ingredients')[0].get('ingredient').encode('utf-8') }}',
-                'sheepItForm_#index#_phone2': '{{ rec.get('ingredients')[0].get('number').encode('utf-8') }}'
-            },
-            {
-
-            },
-            {
-
-            }
-
-
-        ]*/
+        data: dat
     })  ;
 
 });
@@ -78,16 +44,16 @@ i++;
         <script>$('#tags').tagsInput();</script>
 
         <dd><input type=hidden name=id value={{ entry.id }}>
-<!-- TODO: zmenit mena, cez vlastnosti? -->
+
         <!-- sheepIt Form -->
         <div id="sheepItForm">
 
           <!-- Form template-->
           <div id="sheepItForm_template">
-            <label for="sheepItForm_#index#_phone">Ingredient</label>
-            <input id="sheepItForm_#index#_phone" name="ingredient_#index#" type="text" />
-              <label for="sheepItForm_#index#_phone2">Amount</label>
-              <input id="sheepItForm_#index#_phone2" name="amount_#index#" type="text" size="15"/>
+            <label for="ingredient_#index#">Ingredient</label>
+            <input id="ingredient_#index#" name="ingredient_#index#" type="text" />
+              <label for="amount_#index#">Amount</label>
+              <input id="amount_#index#" name="amount_#index#" type="text" size="15"/>
             <a id="sheepItForm_remove_current">
               <img class="delete" src="{{ url_for('static', filename='images/cross.png') }}" width="16" height="16" border="0">
             </a>
@@ -107,9 +73,6 @@ i++;
           </div>
         <!-- /sheepIt Form -->
         </div>
-
-<h4> {{ rec.get('ingredients')[3]  }} </h4>
-          <h4> {{ rec.get('ingredients')[1].get('ingredient').encode('utf-8') }}</h4>
         <dd><input type=submit value=Update>
       </dl>
     </form>

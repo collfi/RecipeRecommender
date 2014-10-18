@@ -41,10 +41,10 @@ $(document).ready(function() {
 
           <!-- Form template-->
           <div id="sheepItForm_template">
-            <label for="sheepItForm_#index#_phone">Ingredient</label>
-            <input id="sheepItForm_#index#_phone" name="ingredient_#index#" type="text"/>
-              <label for="sheepItForm_#index#_phone2">Amount</label>
-              <input id="sheepItForm_#index#_phone2" name="amount_#index#" type="text" size="15"/>
+            <label for="ingredient_#index#">Ingredient</label>
+            <input id="ingredient_#index#" name="ingredient_#index#" type="text"/>
+              <label for="amount_#index#">Amount</label>
+              <input id="amount_#index#" name="amount_#index#" type="text" size="15"/>
             <a id="sheepItForm_remove_current">
               <img class="delete" src="{{ url_for('static', filename='images/cross.png') }}" width="16" height="16" border="0">
             </a>
@@ -64,14 +64,8 @@ $(document).ready(function() {
           </div>
         <!-- /sheepIt Form -->
         </div>
-
-
-
-
         <dd><input type=submit value=Share>
       </dl>
     </form>
-    <!--<input name="tags" id="tags" value="tag1,tag2,tag3" />
-    <script>$('#tags').tagsInput();</script>-->
   {% endif %}
 {% endblock %}
