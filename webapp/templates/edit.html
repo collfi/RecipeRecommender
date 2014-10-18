@@ -40,8 +40,7 @@ for (i = 0; i < {{ max }}; i++) {
         <dd><textarea name=text rows=5 cols=40>{{ entry.text }}</textarea>
 
         <dt>Tags:
-        <dd><input type=text size=50 name=tags value="{{ entry.tags }}" id="tags">
-        <script>$('#tags').tagsInput();</script>
+        <dd><input type=text size=50 name=tags value="{{ tags }}" id="tags">
 
         <dd><input type=hidden name=id value={{ entry.id }}>
 

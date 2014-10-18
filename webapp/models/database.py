@@ -30,21 +30,21 @@ def init_db():
     come up with answer, but it hadn't yet... I don't want to sound like
     I have made no mistakes. I'm confident I have. I just haven't - you
     just put me under the spot here, and maybe I'm not as quick on my feet
-    as I should be in coming up with one.""", 'paleo,raw', None)
+    as I should be in coming up with one.""", None)
     recipe2 = Recipe(2, 'collfi', 'Honey rice', """I wish you'd have given me this written question ahead of time so I
     could plan for it... I'm sure something will pop into my head here in
     the midst of this press conference, with all the pressure of trying to
     come up with answer, but it hadn't yet... I don't want to sound like
     I have made no mistakes. I'm confident I have. I just haven't - you
     just put me under the spot here, and maybe I'm not as quick on my feet
-    as I should be in coming up with one.""", 'vegan,raw', None)
+    as I should be in coming up with one.""", None)
     recipe3 = Recipe(3, 'collfi', 'Roasted beef with chips', """I wish you'd have given me this written question ahead of time so I
     could plan for it... I'm sure something will pop into my head here in
     the midst of this press conference, with all the pressure of trying to
     come up with answer, but it hadn't yet... I don't want to sound like
     I have made no mistakes. I'm confident I have. I just haven't - you
     just put me under the spot here, and maybe I'm not as quick on my feet
-    as I should be in coming up with one.""", 'unhealthy,fat', None)
+    as I should be in coming up with one.""", None)
     db_session.add(recipe)
     db_session.add(recipe2)
     db_session.add(recipe3)

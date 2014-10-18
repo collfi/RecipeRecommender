@@ -34,7 +34,9 @@
     </tbody>
 
  </table>
- <br> <div class="highlight" ><pre><span class="s1">{{ entry.tags }}</span></pre></div>
+ {% if tags %}
+ <br> <div class="highlight" ><pre><span class="s1">{{ tags }}</span></pre></div>
+ {% endif %}
  <script>
 $(document).ready(function(){
     $('#tags').tagsInput({
@@ -64,8 +66,6 @@ $(document).ready(function(){
             }
         });
   }});
-
-
 
   $( "#favorite" ).click(function() {
         $.ajax({

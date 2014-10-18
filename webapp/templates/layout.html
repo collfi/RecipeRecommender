@@ -6,28 +6,73 @@
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='lib/jquery.raty.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='pygment_trac.css') }}">
+<link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/flick/jquery-ui.css">
+<link href="{{ url_for('static',filename='jquery.tagit.css') }}" rel="stylesheet" type="text/css">
 
 <script type=text/javascript src="{{ url_for('static', filename='jquery.js') }}"></script>
 <script type=text/javascript src="{{ url_for('static', filename='lib/jquery.raty.js') }}"></script>
-<script src="{{ url_for('static', filename='jQuery-Tags/jquery.tagsinput.js') }}"></script>
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='jQuery-Tags/jquery.tagsinput.css') }}"/>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="{{ url_for('static',filename='tag-it.js') }}" type="text/javascript" charset="utf-8"></script>
 <script type=text/javascript>
   $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
 </script>
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-    <!--[if lt IE 9]>
-    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<!--[if lt IE 9]>
+<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+<![endif]-->
 <script>
 $(document).ready(function(){
+   var tags = [
+     "paleo",
+     "vegan",
+     "vegetarian",
+     "dairy-free",
+     "gluten-free",
+     "raw",
+     "low-carb",
+     "low-fat",
+     "low-calories",
+     "high-calories",
+     "drinks",
+     "lunch",
+     "dinner",
+     "breakfast",
+     "deserts",
+     "cookies",
+     "junkfood",
+     "french",
+     "italian",
+     "chinese",
+     "indian",
+     "thai",
+     "mexican",
+     "japanese",
+     "greek",
+     "czech",
+     "spicy",
+     "sweety",
+     "salty",
+     "bitter",
+     "oily",
+     "fatty",
+     "meat",
+     "fish",
+     "dairy",
+     "fruit",
+     "vegetables",
+     "seeds"
+    ];
+
+$("#tags").tagit({
+availableTags: tags
+});
 
 $( "#searchb" ).click(function() {
   $( "#search" ).toggle();
   $( "#searchbr").toggle();
 });
-})
+});
 </script>
-
 </head>
 <body>
     <div class="wrapper">

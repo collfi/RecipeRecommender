@@ -35,7 +35,8 @@ class Recipe(Document):
     #favorites is list of user ids
     'date_creation' : datetime,
     'favorites' : [ unicode ],
-    'ingredients' : [{'ingredient':unicode, 'number': unicode}]
+    'ingredients' : [{'ingredient':unicode, 'number': unicode}],
+    'tags' : [ unicode ]
   }
   default_values = {'date_creation':datetime.now()}
 
@@ -76,14 +77,47 @@ def init_mongodb(mconnection):
 
   recipe = recipecol.Recipe()
   recipe['_id'] = 1
+  recipe['ingredients'].append({'ingredient': u'eggs', 'number': u'5'})
+  recipe['ingredients'].append({'ingredient': u'salt', 'number': u'3g'})
+  recipe['ingredients'].append({'ingredient': u'sunflower oil', 'number': u'10 ml'})
+  recipe['tags'].append(u'paleo')
+  recipe['tags'].append(u'raw')
+  recipe['tags'].append(u'vegetarian')
+  recipe['tags'].append(u'gluten-free')
+  recipe['tags'].append(u'low-carb')
+  recipe['tags'].append(u'salty')
+  recipe['tags'].append(u'breakfast')
   recipe.save()
 
   recipe2 = recipecol.Recipe()
   recipe2['_id'] = 2
+  recipe2['ingredients'].append({'ingredient': u'honey', 'number': u'20g'})
+  recipe2['ingredients'].append({'ingredient': u'rice', 'number': u'100g'})
+  recipe2['ingredients'].append({'ingredient': u'salt', 'number': u'3g'})
+  recipe2['ingredients'].append({'ingredient': u'sunflower oil', 'number': u'10 ml'})
+  recipe2['tags'].append(u'vegan')
+  recipe2['tags'].append(u'raw')
+  recipe2['tags'].append(u'vegetarian')
+  recipe2['tags'].append(u'gluten-free')
+  recipe2['tags'].append(u'high-carb')
+  recipe2['tags'].append(u'sweety')
+  recipe2['tags'].append(u'breakfast')
   recipe2.save()
 
   recipe3 = recipecol.Recipe()
   recipe3['_id'] = 3
+  recipe3['ingredients'].append({'ingredient': u'beef', 'number': u'200 g'})
+  recipe3['ingredients'].append({'ingredient': u'rice', 'number': u'300 g'})
+  recipe3['ingredients'].append({'ingredient': u'salt', 'number': u'3g'})
+  recipe3['ingredients'].append({'ingredient': u'sunflower oil', 'number': u'10 ml'})
+  recipe3['ingredients'].append({'ingredient': u'pepper', 'number': u'3 g'})
+  recipe3['tags'].append(u'paleo')
+  recipe3['tags'].append(u'raw')
+  recipe3['tags'].append(u'meat')
+  recipe3['tags'].append(u'high-protein')
+  recipe3['tags'].append(u'low-carb')
+  recipe3['tags'].append(u'salty')
+  recipe3['tags'].append(u'lunch')
   recipe3.save()
 
   user = userscol.User()

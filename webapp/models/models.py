@@ -30,12 +30,11 @@ class Recipe(Base):
   avgrating = Column(REAL, unique=False)
   interested = Column(REAL, unique=False)
 
-  def __init__(self, id = None, userid=None, title=None, text=None, tags=None, image=None, rating=None, interested=None):
+  def __init__(self, id = None, userid=None, title=None, text=None, image=None, rating=None, interested=None):
     self.id = id
     self.userid = userid
     self.title = title
     self.text = text
-    self.tags = tags
     self.image = image
     self.avgrating = rating
     self.interested = interested

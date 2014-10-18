@@ -139,20 +139,22 @@ def edit(id):
 
   if entry.userid != session['user_in']:
     return redirect(url_for('show_entries', headline="Recipes"))
-  return render_template('edit.html', entry=entry, rec=rec, max=max)
+  return render_template('edit.html', entry=entry, rec=rec, max=max, tags=','.join(rec['tags']))
 
 @app.route('/recipe/add_entry', methods=['POST'])
 def add_entry():
   # check the file
   file = request.files['file']
   # store the recipe
-  recipe = Recipe(None, session['user_in'], request.form['title'], request.form['text'], request.form['tags'],
-                  base64.b64encode(file.read()))
+  tags = request.form['tags'].split(',')
+  recipe = Recipe(None, session['user_in'], request.form['title'], request.form['text'], base64.b64encode(file.read()))
   db_session.add(recipe)
   db_session.commit()
+
   # create in mongo
   recipemongo = recipecol.Recipe()
   recipemongo['_id'] = recipe.id
+  recipemongo['tags'] = request.form['tags'].split(',')
   recipemongo.save()
   # get ingredients
   count = 0
@@ -163,10 +165,12 @@ def add_entry():
       amount =request.form['amount_' + str(count)]
       count += 1
       recipemongo['ingredients'].append({'ingredient': name, 'number': amount})
-      recipemongo.save()
+
     else:
       print ("no more ingredients")
       nextIng = False
+  recipemongo.save()
+  print recipemongo['tags']
   flash('New entry was successfully posted')
   return redirect(url_for('show_entries', headline="Recipes"))
 
@@ -177,11 +181,12 @@ def edit_entry():
   recipe = q.one()
   recipe.title = request.form['title']
   recipe.text = request.form['text']
-  recipe.tags = request.form['tags']
   db_session.commit()
   #---------------------------------
   recipemongo = recipecol.Recipe.find_one({'_id': int(recipe.id)})
+  recipemongo['tags'] = request.form['tags'].split(',')
   recipemongo['ingredients'] = []
+  recipemongo.save()
   # get ingredients
   count = 0
   nextIng = True
@@ -190,16 +195,14 @@ def edit_entry():
       name = request.form['ingredient_' + str(count)]
       amount = request.form['amount_' + str(count)]
       count += 1
-      #!!! Preco toto nejde? ale ked to je v inej premennej tak to ide???
-      #recipemongo['ingredients'].append({'ingredient': unicode(request.form['ingredient_' + unicode(count)]),
-      #                                  'number': unicode(request.form['amount_' + unicode(count)])})
       recipemongo['ingredients'].append({'ingredient': name, 'number': amount})
-      recipemongo.save()
     else:
       print ("no more ingredients")
       nextIng = False
   #---------------------------------
-  return redirect(url_for('show_entries', headline="Recipes"))
+  print recipemongo['tags']
+  recipemongo.save()
+  return redirect(url_for('show_entries', headline="Recipes", tags=','.join(recipemongo['tags'])))
 
 @app.route("/recipe/<id>.png")
 def image(id):
@@ -227,19 +230,19 @@ def show_entry(id):
   #a ja som dal nieco take ako rated.get('ratings')[0].get('value')??
   value = 0
 
-  rec = recipecol.Recipe.find_one({'_id': int(id)})
-
   if rated:
     for item in rated.get('ratings'):
-        if item.get('itemid') == int(id):
-            value = item.get('value')
+      if item.get('itemid') == int(id):
+        value = item.get('value')
 
   entry = db_session.query(Recipe).get(id)
+  rec = recipecol.Recipe.find_one({'_id': int(id)})
+  tags = ','.join(rec['tags'])
   if user:
-      favorited = True
+    favorited = True
   if entry.userid == session['user_in']:
-      canedit = True
-  return render_template('show_entry.html', entry=entry, canedit=canedit, favorited=favorited, value=value, rec=rec)
+    canedit = True
+  return render_template('show_entry.html', entry=entry, canedit=canedit, favorited=favorited, value=value, rec=rec, tags=tags)
 #endregion
 
 #region recommendations
