@@ -1,6 +1,7 @@
 #region import
 from mongokit import Connection
 import sys
+import math
 # i need to add this because of imports
 sys.path.append('/home/michal/Desktop/RECSYS/RecipeRecommender/')
 #sys.path.append('/home/collfi/RecSys/RecipeRecommender/')
@@ -97,6 +98,70 @@ def hackernews_score(votes, item_hour_age, gravity=1.8):
   return (votes + 1) / pow((item_hour_age+2), gravity)
 #endregion
 
+#region similar items
+def similar_items():
+  pass
+
+def tags_to_vector(tags):
+  pass
+
+# compute cosine similarity between two vectors
+# return values from <<0,1>
+# good for: tags
+def cosine_similarity(list1=[], list2=[]):
+  if len(list1) != len(list2):
+    return None
+
+  numerator, pow1, pow2 = 0.0, 0.0, 0.0
+
+  for i in range(0, len(list1)):
+    numerator = numerator + (list1[i] * list2[i])
+    pow1 = pow1 + (list1[i] * list1[i])
+    pow2 = pow2 + (list2[i] * list2[i])
+
+  denumerator = math.sqrt(pow1) * math.sqrt(pow2)
+  if denumerator == 0.0:
+    return 0.0
+  else:
+    return numerator/denumerator
+
+# tanimoto coefficient/ jaccard index is good for
+# binary representations
+# good for: tags
+def tanimoto_coeffiecient(list1=[],list2=[]):
+  if len(list1) != len(list2):
+    return None
+
+  nc, na, nb = 0.0, 0.0, 0.0
+
+  for i in range(0, len(list1)):
+    if list1[i] == list2[i]:
+      nc = nc + 1.0
+    if list1[i] > 0:
+      na = na + 1.0
+    if list2[i] > 0:
+      nb = nb + 1.0
+  denumerator = na + nb - nc
+
+  if denumerator == 0.0:
+    return  0.0
+  else:
+    return nc/denumerator
+
+#endregion
+
+#region personalized
+#region collaborative filtering
+def collaborative_filtering():
+  pass
+#endregion
+
+#region content-based
+def content_based():
+  pass
+#endregion
+#endregion
+
 #endregion
 
 def recommend():
@@ -108,5 +173,13 @@ def recommend():
   bestrated()
   print "4. computing interesting with hacker news formula"
   hackernews_interesting()
+  print "5. computing similar items"
+  similar_items()
+  print "6. computing collaborative filtering"
+  collaborative_filtering()
+  print "7. computing content based recommendations"
+  content_based()
+  print "result:" + str(cosine_similarity([0,0,0],
+                                          [1, 1, 1]))
 
 recommend()

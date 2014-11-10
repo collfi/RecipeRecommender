@@ -51,6 +51,7 @@ class Recipe(Document):
 class NonPersonal(Document):
   structure = {
       # ids of top5favorites recipes
+      'tags' : [ unicode ],
       'topfavorites' : [ int ],
       'toprated' : [ int ],
   }
@@ -73,6 +74,44 @@ def init_mongodb(mconnection):
 
   nonpcol = nonpcol.NonPersonal()
   nonpcol['_id'] = 1
+  nonpcol['tags'].append(u"vegan")
+  nonpcol['tags'].append(u"vegetarian")
+  nonpcol['tags'].append(u"dairy-free")
+  nonpcol['tags'].append(u"gluten-free")
+  nonpcol['tags'].append(u"raw")
+  nonpcol['tags'].append(u"low-carb")
+  nonpcol['tags'].append(u"low-fat")
+  nonpcol['tags'].append(u"low-calories")
+  nonpcol['tags'].append(u"high-calories")
+  nonpcol['tags'].append(u"drinks")
+  nonpcol['tags'].append(u"lunch")
+  nonpcol['tags'].append(u"dinner")
+  nonpcol['tags'].append(u"breakfast")
+  nonpcol['tags'].append(u"deserts")
+  nonpcol['tags'].append(u"cookies")
+  nonpcol['tags'].append(u"junkfood")
+  nonpcol['tags'].append(u"french")
+  nonpcol['tags'].append(u"italian")
+  nonpcol['tags'].append(u"chinese")
+  nonpcol['tags'].append(u"indian")
+  nonpcol['tags'].append(u"thai")
+  nonpcol['tags'].append(u"mexican")
+  nonpcol['tags'].append(u"japanese")
+  nonpcol['tags'].append(u"greek")
+  nonpcol['tags'].append(u"czech")
+  nonpcol['tags'].append(u"spicy")
+  nonpcol['tags'].append(u"sweety")
+  nonpcol['tags'].append(u"salty")
+  nonpcol['tags'].append(u"bitter")
+  nonpcol['tags'].append(u"oily")
+  nonpcol['tags'].append(u"fatty")
+  nonpcol['tags'].append(u"meat")
+  nonpcol['tags'].append(u"fish")
+  nonpcol['tags'].append(u"dairy")
+  nonpcol['tags'].append(u"fruit")
+  nonpcol['tags'].append(u"vegetables")
+  nonpcol['tags'].append(u"seeds")
+  nonpcol['tags'].append(u"sour")
   nonpcol.save()
 
   recipe = recipecol.Recipe()

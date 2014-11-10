@@ -22,7 +22,8 @@
 <![endif]-->
 <script>
 $(document).ready(function(){
-   var tags = [
+
+ var tags = [
      "paleo",
      "vegan",
      "vegetarian",
@@ -60,17 +61,12 @@ $(document).ready(function(){
      "dairy",
      "fruit",
      "vegetables",
-     "seeds"
+     "seeds",
+     "sour"
     ];
 
 $("#tags").tagit({
 availableTags: tags
-});
-
-$( "#searchb" ).click(function() {
-  $( "#search" ).toggle();
-  $( "#searchbr").toggle();
-});
 });
 </script>
 </head>
