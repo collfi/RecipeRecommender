@@ -160,6 +160,23 @@ def collaborative_filtering():
 def content_based():
   pass
 #endregion
+
+#region simpeople
+def similar_people():
+  for user in userscol.User.find():
+    sim_person(user)
+
+def sim_person(user1):
+  for user2 in userscol.User.find():
+    similarity(user1, user2)
+
+def similarity(user1, user2):
+  # list of mutual ratings
+  si={}
+  for item in user2['ratings']:
+    print item
+#endregion
+
 #endregion
 
 #endregion
@@ -179,7 +196,7 @@ def recommend():
   collaborative_filtering()
   print "7. computing content based recommendations"
   content_based()
-  print "result:" + str(cosine_similarity([0,0,0],
-                                          [1, 1, 1]))
+  print "8. computing similar people"
+  similar_people()
 
 recommend()
