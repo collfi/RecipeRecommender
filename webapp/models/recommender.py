@@ -14,12 +14,20 @@ class User(Document):
     #'_id' : str,
     # value is rating, itemid is id of item
     'ratings' : [{'itemid' : int, 'value' : float, 'date_creation' : datetime}],
+    # value is similiarity
+    'similiar_users' : [{'userid' : unicode, 'value' : float}],
     # these are ids of recipes
     'favorites' : [ int],
   }
   use_dot_notation = True
   #required_fields = ['_id']
   #default_values = {...}
+  def getRating(self,itemid):
+    for rate in self.ratings:
+      if rate['itemid'] == itemid:
+        return rate['value']
+    return None
+
   def print_ratings(self):
     print "ratings:", self.ratings
 

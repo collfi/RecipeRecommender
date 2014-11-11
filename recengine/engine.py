@@ -1,4 +1,5 @@
 #region import
+from operator import itemgetter
 from mongokit import Connection
 import sys
 import math
@@ -98,58 +99,6 @@ def hackernews_score(votes, item_hour_age, gravity=1.8):
   return (votes + 1) / pow((item_hour_age+2), gravity)
 #endregion
 
-#region similar items
-def similar_items():
-  pass
-
-def tags_to_vector(tags):
-  pass
-
-# compute cosine similarity between two vectors
-# return values from <<0,1>
-# good for: tags
-def cosine_similarity(list1=[], list2=[]):
-  if len(list1) != len(list2):
-    return None
-
-  numerator, pow1, pow2 = 0.0, 0.0, 0.0
-
-  for i in range(0, len(list1)):
-    numerator = numerator + (list1[i] * list2[i])
-    pow1 = pow1 + (list1[i] * list1[i])
-    pow2 = pow2 + (list2[i] * list2[i])
-
-  denumerator = math.sqrt(pow1) * math.sqrt(pow2)
-  if denumerator == 0.0:
-    return 0.0
-  else:
-    return numerator/denumerator
-
-# tanimoto coefficient/ jaccard index is good for
-# binary representations
-# good for: tags
-def tanimoto_coeffiecient(list1=[],list2=[]):
-  if len(list1) != len(list2):
-    return None
-
-  nc, na, nb = 0.0, 0.0, 0.0
-
-  for i in range(0, len(list1)):
-    if list1[i] == list2[i]:
-      nc = nc + 1.0
-    if list1[i] > 0:
-      na = na + 1.0
-    if list2[i] > 0:
-      nb = nb + 1.0
-  denumerator = na + nb - nc
-
-  if denumerator == 0.0:
-    return  0.0
-  else:
-    return nc/denumerator
-
-#endregion
-
 #region personalized
 #region collaborative filtering
 def collaborative_filtering():
@@ -162,19 +111,61 @@ def content_based():
 #endregion
 
 #region simpeople
+# we compute for each user 7 most similar people
 def similar_people():
   for user in userscol.User.find():
     sim_person(user)
 
 def sim_person(user1):
+  sim_array = []
   for user2 in userscol.User.find():
-    similarity(user1, user2)
+    sim_array.append({'userid':user2['_id'], 'value':cos_sim_user(user1,user2)})
+  newlist = sorted(sim_array, key=itemgetter('value'), reverse = True)
 
-def similarity(user1, user2):
+  i = 0
+  for item in newlist:
+    user1['similiar_users'].append({'userid':item['userid'],'value':item['value']})
+    i += 1
+    if i == 7: return
+
+# this is cosine similarity between two users
+#           x.y
+# cos  = ---------
+#         |x|.|y|
+def cos_sim_user(user1, user2):
+  if user1['_id'] == user2['_id']: return 0.0 # should be 1.0 but we don't want to compute this
+  if len(user1['ratings']) == 0 or len(user2['ratings']) == 0: return 0.0
+
   # list of mutual ratings
-  si={}
+  mratings = []
+  for item1 in user1['ratings']:
+    for item2 in user2['ratings']:
+      if item1['itemid'] == item2['itemid']:
+        mratings.append(item1['itemid'])
+
+  # if are no common ratings
+  if len(mratings) == 0: return 0.0
+
+  numerator, pow1, pow2 = 0.0, 0.0, 0.0
+
+  for item in user1['ratings']:
+    pow1 = pow1 + (item['value'] * item['value'])
+
   for item in user2['ratings']:
-    print item
+    pow2 = pow2 + (item['value'] * item['value'])
+
+  denumerator = math.sqrt(pow1) * math.sqrt(pow2)
+
+  if denumerator == 0.0: return 0.0
+
+  for itemid in mratings:
+    rating1 = user1.getRating(itemid)
+    rating2 = user2.getRating(itemid)
+    numerator = numerator + (rating1 * rating2)
+
+  return numerator/denumerator
+
+
 #endregion
 
 #endregion
@@ -190,13 +181,11 @@ def recommend():
   bestrated()
   print "4. computing interesting with hacker news formula"
   hackernews_interesting()
-  print "5. computing similar items"
-  similar_items()
+  print "5. computing similar people"
+  similar_people()
   print "6. computing collaborative filtering"
   collaborative_filtering()
   print "7. computing content based recommendations"
   content_based()
-  print "8. computing similar people"
-  similar_people()
 
 recommend()
