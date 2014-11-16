@@ -44,7 +44,9 @@ class Recipe(Document):
     'date_creation' : datetime,
     'favorites' : [ unicode ],
     'ingredients' : [{'ingredient':unicode, 'number': unicode}],
-    'tags' : [ unicode ]
+    'tags' : [ unicode ],
+    # value is similiarity
+    'similiar_items' : [ {'itemid' : int, 'value' : float} ],
   }
   default_values = {'date_creation':datetime.now()}
 
@@ -64,6 +66,9 @@ class NonPersonal(Document):
       'toprated' : [ int ],
   }
   use_dot_notation = True
+
+  def get_tags(self):
+    return sorted(self.tags)
 
   def print_top5favorites(self):
       print "top 5 favorites:", self.top5favorites

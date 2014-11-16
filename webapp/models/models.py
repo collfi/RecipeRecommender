@@ -24,7 +24,6 @@ class Recipe(Base):
   userid = Column(String(120), unique=False)
   title = Column(String(120), unique=False)
   text = Column(String(1000), unique=False)
-  tags = Column(String(1000), unique=False)
   ingredients = Column(String(1000), unique=False)
   image = Column(Binary(9000), unique=False)
   avgrating = Column(REAL, unique=False)

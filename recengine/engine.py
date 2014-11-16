@@ -43,7 +43,6 @@ def mostfavorite():
   fav_sorted.reverse()
   fav_sorted = fav_sorted[:10]
   #alebo fav_sorted = fav_sorted.reverse()[:5]??
-  nonpcol.drop()
   nonitem = nonpcol.NonPersonal()
   nonitem['_id'] = 1
   nonitem.save()
@@ -107,10 +106,13 @@ def collaborative_filtering():
 
 #region content-based
 def content_based():
+  # 1. compute item vectors
+  # 2. build user profiles
+  # 3. predicting items, cos(user,item)
   pass
 #endregion
 
-#region simpeople
+#region similar people
 # we compute for each user 7 most similar people
 def similar_people():
   for user in userscol.User.find():
@@ -125,9 +127,9 @@ def sim_person(user1):
   i = 0
   for item in newlist:
     user1['similiar_users'].append({'userid':item['userid'],'value':item['value']})
+    user1.save()
     i += 1
     if i == 7: return
-
 # this is cosine similarity between two users
 #           x.y
 # cos  = ---------
@@ -168,11 +170,49 @@ def cos_sim_user(user1, user2):
 
 #endregion
 
+#region similar items
+def similar_items():
+  for item1 in recipecol.Recipe.find():
+    for item2 in recipecol.Recipe.find():
+      print cos_sim_recipes(item1, item2)
+
+def cos_sim_recipes(item1, item2):
+  recipe=nonpcol.NonPersonal.find_one({'_id':1})
+  tags = recipe.get_tags()
+  vector1, vector2 = [], []
+
+  print tags
+  for tag in tags:
+    if tag in item1['tags']: vector1.append(1.0)
+    else: vector1.append(0.0)
+    if tag in item2['tags']: vector2.append(1.0)
+    else: vector2.append(0.0)
+
+  numerator, pow1, pow2 = 0.0, 0.0, 0.0
+
+  for i in range(0, len(tags)):
+    numerator = numerator + (vector1[i] * vector2[i])
+    pow1 = pow1 + (vector1[i] * vector1[i])
+    pow2 = pow2 + (vector2[i] * vector2[i])
+
+  denumerator = math.sqrt(pow1) * math.sqrt(pow2)
+  if denumerator == 0.0:
+    return 0.0
+  else:
+    return numerator/denumerator
+
+#endregion
+#endregion
 #endregion
 
+#region clean
+def clear():
+  nonpcol.drop()
+  userscol.update({}, {'$pull': {'similiar_users': {'$exists': True}} }, multi=True)
 #endregion
 
 def recommend():
+  clear()
   print "1. computing most favorite items"
   mostfavorite()
   print "2. computing average ratings for items"
@@ -183,9 +223,11 @@ def recommend():
   hackernews_interesting()
   print "5. computing similar people"
   similar_people()
-  print "6. computing collaborative filtering"
-  collaborative_filtering()
+  print "6. computing similar recipes/items"
+  similar_items()
   print "7. computing content based recommendations"
   content_based()
+  print "8. computing collaborative filtering"
+  collaborative_filtering()
 
 recommend()

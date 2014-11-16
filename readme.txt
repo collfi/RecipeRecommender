@@ -9,11 +9,14 @@ git pull // zobranie zo serveru
 git pull origin master
 
 todo:
-collfi do nedele 26.10:
-- este doplnim
+collfi do nedele 23.11:
+- collaborative filtering (pravdepodobne zpociatku user-user), na coursera
+introduction to recommender systems kde sa da preview lecture a pozret o tom videjko,
+mozes pouzit predpocitanych 5 najpodobnejsich ludi, ktore sa uz momentalne pocitaju v sim_people
+a ukladaju do monga ku kazdemu uzivatelovi
 
-cospel do nedele 26.10:
-- podobnost dvoch receptov, podobnost dvoch uzivatelov
+cospel do nedele 23.11:
+- content based recommender: vymysliet ako vytvorit podobnost dvoch receptov, zamysliet sa nad user profilom
 
 ideas:
 -search
