@@ -159,6 +159,18 @@ def add_entry():
   # get ingredients
   count = 0
   nextIng = True
+
+  #add to nonpersonal all tags
+  tags = request.form['tags'].split(',')
+  data = nonpcol.NonPersonal.find_one({'_id':1})
+
+  for tag in tags:
+    if tag not in data.get_tags():
+      print tag
+      data['tags'].append(unicode(tag))
+
+  data.save()
+
   while nextIng:
     if 'ingredient_' + str(count) in request.form:
       name = request.form['ingredient_' + str(count)]
@@ -170,7 +182,6 @@ def add_entry():
       print ("no more ingredients")
       nextIng = False
   recipemongo.save()
-  print recipemongo['tags']
   flash('New entry was successfully posted')
   return redirect(url_for('show_entries', headline="Recipes"))
 

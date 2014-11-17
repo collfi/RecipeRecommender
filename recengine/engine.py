@@ -28,6 +28,11 @@ mconnection.register([recommender.NonPersonal])
 userscol = mconnection['recsys'].users
 recipecol = mconnection['recsys'].recipes
 nonpcol = mconnection['recsys'].nonpersonal
+
+# data
+data = nonpcol.NonPersonal.find_one({'_id':1})
+tags = data.get('tags')
+
 #endregion
 
 #region computing
@@ -169,10 +174,20 @@ def pearson_sim_user(user1, user2):
 
 #region content-based
 def content_based():
-  # 1. compute item vectors
-  # 2. build user profiles
-  # 3. predicting items, cos(user,item)
+  # 1. build user profiles
+  for user in userscol.User.find():
+    # 2. get favorited items
+    favitems = user.get('favorites')
+    # 3. and build user profiles by tags and ingredients
+    for item in favitems:
+      vector = get_recipe_vector()
+    # 4. you can get also rated items
+    #    and build weighted user profiles by tags and ingredients
+  # 5. predicting items, cos(user,item)
   pass
+
+def get_recipe_vector():
+  return None
 #endregion
 
 #region similar people
@@ -193,6 +208,7 @@ def sim_person(user1):
     user1.save()
     i += 1
     if i == 7: return
+
 # this is cosine similarity between two users
 #           x.y
 # cos  = ---------
@@ -237,11 +253,14 @@ def cos_sim_user(user1, user2):
 def similar_items():
   for item1 in recipecol.Recipe.find():
     for item2 in recipecol.Recipe.find():
-      print cos_sim_recipes(item1, item2)
+      print item1.get('_id'), item2.get('_id'), cos_sim_recipes(item1, item2)
 
+# cos sim between two recipes based on tags
+#           x.y
+# cos  = ---------
+#         |x|.|y|
 def cos_sim_recipes(item1, item2):
-  recipe=nonpcol.NonPersonal.find_one({'_id':1})
-  tags = recipe.get_tags()
+  global tags
   vector1, vector2 = [], []
 
   print tags
@@ -270,8 +289,10 @@ def cos_sim_recipes(item1, item2):
 
 #region clean
 def clear():
-  nonpcol.drop()
-  userscol.update({}, {'$pull': {'similiar_users': {'$exists': True}} }, multi=True)
+  # we clean some "columns" not entire document
+  nonpcol.update({}, {'$pull': {'topfavorites': {'$exists': True}}}, multi=True)
+  nonpcol.update({}, {'$pull': {'toprated': {'$exists': True}}}, multi=True)
+  userscol.update({}, {'$pull': {'similiar_users': {'$exists': True}}}, multi=True)
 #endregion
 
 def recommend():
