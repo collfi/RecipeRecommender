@@ -9,6 +9,7 @@ sys.path.append('/home/michal/Desktop/RECSYS/RecipeRecommender/')
 from sqlalchemy import and_
 from webapp.models import recommender
 from datetime import datetime
+from math import sqrt
 #endregion
 
 #region database
@@ -101,7 +102,69 @@ def hackernews_score(votes, item_hour_age, gravity=1.8):
 #region personalized
 #region collaborative filtering
 def collaborative_filtering():
+  '''
+  for every user
+    for every item
+      if not in user['ratings']
+        sort similar user by how many common items they have
+
+          pred(user,item) = average(u) + (sum(pearson_sim_user(u,b) * rating(b, i))) / (sum(pearson_sim_user(u,b)))
+
+        OR
+
+        for every similar user(b)
+          sum_pearson += pearson_sim_user(user, b)
+        pred(user, item) = average(user) + (sum_pearson * rating(b, item)) / (sum_pearson)
+
+        OR
+
+        as previous, but that for cycle to the first cycle!
+
+      save pred to array and sort by value
+      display top 5
+
+  .what if they have only few similar items?
+  .in similarity, pick only similar, not exactly 7 every time
+
+  '''
   pass
+
+#Pearson Correlation Coefficient
+def pearson_sim_user(user1, user2):
+  if user1['_id'] == user2['_id']: return 0.0 # should be 1.0 but we don't want to compute this
+  if len(user1['ratings']) == 0 or len(user2['ratings']) == 0: return 0.0
+
+  # list of mutual ratings
+  mratings = []
+  for item1 in user1['ratings']:
+    for item2 in user2['ratings']:
+      if item1['itemid'] == item2['itemid']:
+        mratings.append({'itemid': item1['itemid'], 'value1': item1['value'], 'value2': item2['value']})
+        break #???????????????????????????/
+
+  # if are no common ratings
+  if len(mratings) == 0: return 0.0
+
+
+  #average ratings for users
+  average1 = 0
+  for item in user1['ratings']:
+    average1 += (item['value'])
+  average1 /= len(user1['ratings'])
+  average2 = 0
+  for item in user2['ratings']:
+    average2 += (item['value'])
+  average2 /= len(user2['ratings'])
+
+  den1 = 0
+  den2 = 0
+  sum1 = 0
+  for item in mratings:
+    sum1 += ((item.get('value1') - average1) * (item.get('value2') - average2))
+    den1 += (item.get('value1') - average1) * (item.get('value1') - average1)
+    den2 += (item.get('value2') - average2) * (item.get('value2') - average2)
+  return (sum1)/((sqrt(den1))*(sqrt(den2)))
+
 #endregion
 
 #region content-based
