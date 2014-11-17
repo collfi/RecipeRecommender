@@ -111,25 +111,38 @@ def collaborative_filtering():
   for every user
     for every item
       if not in user['ratings']
-        sort similar user by how many common items they have
+        sort similar user by how many common items they have #useless????????????????
 
+        numerator = 0
+        denominator = 0
+        for every similar user(b)
+          if item in b['ratings']
+            numerator += pearson_sim_user(user, b) * (rating(b, item) - average(b))
+            denominator += pearson_si_user(user, b)
+
+        pred(user, item) = average(user) + (numerator / denominator)
+
+        save pred to array and sort by value
+        display top 5
+
+
+        /******************************************
           pred(user,item) = average(u) + (sum(pearson_sim_user(u,b) * rating(b, i))) / (sum(pearson_sim_user(u,b)))
 
         OR
 
+        //WRONG!
         for every similar user(b)
           sum_pearson += pearson_sim_user(user, b)
         pred(user, item) = average(user) + (sum_pearson * rating(b, item)) / (sum_pearson)
 
         OR
 
-        as previous, but that for cycle to the first cycle!
-
-      save pred to array and sort by value
-      display top 5
+        as previous, but that for cycle to the first cycle!*/
+        ********************************************/
 
   .what if they have only few similar items?
-  .in similarity, pick only similar, not exactly 7 every time
+  .in similarity, pick only similar, not exactly 7 every time - pick those, with similarity > 0.7, maximum 7 (20-30)
 
   '''
   pass
@@ -145,7 +158,7 @@ def pearson_sim_user(user1, user2):
     for item2 in user2['ratings']:
       if item1['itemid'] == item2['itemid']:
         mratings.append({'itemid': item1['itemid'], 'value1': item1['value'], 'value2': item2['value']})
-        break #???????????????????????????/
+        break
 
   # if are no common ratings
   if len(mratings) == 0: return 0.0
@@ -168,7 +181,7 @@ def pearson_sim_user(user1, user2):
     sum1 += ((item.get('value1') - average1) * (item.get('value2') - average2))
     den1 += (item.get('value1') - average1) * (item.get('value1') - average1)
     den2 += (item.get('value2') - average2) * (item.get('value2') - average2)
-  return (sum1)/((sqrt(den1))*(sqrt(den2)))
+  return (sum1)/((sqrt(den1))*(sqrt(den2))) # * 1/min(common items, treshold) OR just put constant in denominator
 
 #endregion
 
