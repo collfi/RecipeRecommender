@@ -27,6 +27,11 @@ mconnection.register([recommender.NonPersonal])
 userscol = mconnection['recsys'].users
 recipecol = mconnection['recsys'].recipes
 nonpcol = mconnection['recsys'].nonpersonal
+
+# data
+data = nonpcol.NonPersonal.find_one({'_id':1})
+tags = data.get('tags')
+
 #endregion
 
 #region computing
@@ -106,8 +111,12 @@ def collaborative_filtering():
 
 #region content-based
 def content_based():
-  # 1. compute item vectors
-  # 2. build user profiles
+  # 1. build user profiles
+  # for user in users:
+    # 2. get favorited items
+    #    and build user profiles by tags and ingredients
+    # 2.5. you can get also rated items
+    #    and build weighted user profiles by tags and ingredients
   # 3. predicting items, cos(user,item)
   pass
 #endregion
@@ -174,14 +183,13 @@ def cos_sim_user(user1, user2):
 def similar_items():
   for item1 in recipecol.Recipe.find():
     for item2 in recipecol.Recipe.find():
-      print cos_sim_recipes(item1, item2)
+      print item1.get('_id'), item2.get('_id'), cos_sim_recipes(item1, item2)
 
 def cos_sim_recipes(item1, item2):
+  global tags
   recipe=nonpcol.NonPersonal.find_one({'_id':1})
-  tags = recipe.get_tags()
   vector1, vector2 = [], []
 
-  print tags
   for tag in tags:
     if tag in item1['tags']: vector1.append(1.0)
     else: vector1.append(0.0)
@@ -207,8 +215,9 @@ def cos_sim_recipes(item1, item2):
 
 #region clean
 def clear():
-  nonpcol.drop()
-  userscol.update({}, {'$pull': {'similiar_users': {'$exists': True}} }, multi=True)
+  nonpcol.update({}, {'$pull': {'topfavorites': {'$exists': True}}}, multi=True)
+  nonpcol.update({}, {'$pull': {'toprated': {'$exists': True}}}, multi=True)
+  userscol.update({}, {'$pull': {'similiar_users': {'$exists': True}}}, multi=True)
 #endregion
 
 def recommend():

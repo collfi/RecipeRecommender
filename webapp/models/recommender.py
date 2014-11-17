@@ -126,6 +126,7 @@ def init_mongodb(mconnection):
   nonpcol['tags'].append(u"seeds")
   nonpcol['tags'].append(u"sour")
   nonpcol.save()
+  print nonpcol['tags']
 
   recipe = recipecol.Recipe()
   recipe['_id'] = 1
