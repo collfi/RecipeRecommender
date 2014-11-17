@@ -112,13 +112,19 @@ def collaborative_filtering():
 #region content-based
 def content_based():
   # 1. build user profiles
-  # for user in users:
+  for user in userscol.User.find():
     # 2. get favorited items
-    #    and build user profiles by tags and ingredients
-    # 2.5. you can get also rated items
+    favitems = user.get('favorites')
+    # 3. and build user profiles by tags and ingredients
+    for item in favitems:
+      vector = get_recipe_vector()
+    # 4. you can get also rated items
     #    and build weighted user profiles by tags and ingredients
-  # 3. predicting items, cos(user,item)
+  # 5. predicting items, cos(user,item)
   pass
+
+def get_recipe_vector():
+  return None
 #endregion
 
 #region similar people
@@ -139,6 +145,7 @@ def sim_person(user1):
     user1.save()
     i += 1
     if i == 7: return
+
 # this is cosine similarity between two users
 #           x.y
 # cos  = ---------
@@ -185,11 +192,15 @@ def similar_items():
     for item2 in recipecol.Recipe.find():
       print item1.get('_id'), item2.get('_id'), cos_sim_recipes(item1, item2)
 
+# cos sim between two recipes based on tags
+#           x.y
+# cos  = ---------
+#         |x|.|y|
 def cos_sim_recipes(item1, item2):
   global tags
-  recipe=nonpcol.NonPersonal.find_one({'_id':1})
   vector1, vector2 = [], []
 
+  print tags
   for tag in tags:
     if tag in item1['tags']: vector1.append(1.0)
     else: vector1.append(0.0)
@@ -215,6 +226,7 @@ def cos_sim_recipes(item1, item2):
 
 #region clean
 def clear():
+  # we clean some "columns" not entire document
   nonpcol.update({}, {'$pull': {'topfavorites': {'$exists': True}}}, multi=True)
   nonpcol.update({}, {'$pull': {'toprated': {'$exists': True}}}, multi=True)
   userscol.update({}, {'$pull': {'similiar_users': {'$exists': True}}}, multi=True)
