@@ -29,8 +29,8 @@ recipecol = mconnection['recsys'].recipes
 nonpcol = mconnection['recsys'].nonpersonal
 
 # data
-data = nonpcol.NonPersonal.find_one({'_id':1})
-tags = data.get('tags')
+tags = nonpcol.NonPersonal.find_one({'_id':1}).get('tags')
+#tags = data.get('tags')
 
 #endregion
 
@@ -110,20 +110,23 @@ def collaborative_filtering():
 #endregion
 
 #region content-based
-def content_based():
+def content_based_tags():
   # 1. build user profiles
   for user in userscol.User.find():
     # 2. get favorited items
     favitems = user.get('favorites')
     # 3. and build user profiles by tags and ingredients
     for item in favitems:
-      vector = get_recipe_vector()
+      vector = get_recipe_tagvector()
     # 4. you can get also rated items
     #    and build weighted user profiles by tags and ingredients
   # 5. predicting items, cos(user,item)
   pass
 
-def get_recipe_vector():
+def content_based_ingredients():
+  pass
+
+def get_recipe_tagvector():
   return None
 #endregion
 
@@ -146,7 +149,7 @@ def sim_person(user1):
     i += 1
     if i == 7: return
 
-# this is cosine similarity between two users
+# this is cosine similarity between two users based on ratings
 #           x.y
 # cos  = ---------
 #         |x|.|y|
@@ -189,24 +192,39 @@ def cos_sim_user(user1, user2):
 #region similar items
 def similar_items():
   for item1 in recipecol.Recipe.find():
-    for item2 in recipecol.Recipe.find():
-      print item1.get('_id'), item2.get('_id'), cos_sim_recipes(item1, item2)
+    sim_item(item1)
+
+def sim_item(item1):
+  sim_array = []
+  for item2 in recipecol.Recipe.find():
+    print "1"
+    sim_array.append({'itemid':item2['_id'], 'value': cos_sim_recipes_tags(item1, item2)})
+  newlist = sorted(sim_array, key=itemgetter('value'), reverse = True)
+  print sim_array
+  i = 0
+  for item in newlist:
+    item1['similiar_items'].append({'itemid': item['itemid'], 'value': item['value']})
+    item1.save()
+    i += 1
+    if i == 2: return
 
 # cos sim between two recipes based on tags
 #           x.y
 # cos  = ---------
 #         |x|.|y|
-def cos_sim_recipes(item1, item2):
+def cos_sim_recipes_tags(item1, item2):
   global tags
+  if item1['_id'] == item2['_id']: return 0.0
+  if len(item1['tags']) == 0 or len(item2['tags']) == 0: return 0.0
   vector1, vector2 = [], []
 
-  print tags
   for tag in tags:
+    print tag
     if tag in item1['tags']: vector1.append(1.0)
     else: vector1.append(0.0)
     if tag in item2['tags']: vector2.append(1.0)
     else: vector2.append(0.0)
-
+  print vector1
   numerator, pow1, pow2 = 0.0, 0.0, 0.0
 
   for i in range(0, len(tags)):
@@ -227,9 +245,10 @@ def cos_sim_recipes(item1, item2):
 #region clean
 def clear():
   # we clean some "columns" not entire document
-  nonpcol.update({}, {'$pull': {'topfavorites': {'$exists': True}}}, multi=True)
-  nonpcol.update({}, {'$pull': {'toprated': {'$exists': True}}}, multi=True)
-  userscol.update({}, {'$pull': {'similiar_users': {'$exists': True}}}, multi=True)
+  nonpcol.update(  {}, {'$pull': {'topfavorites':    {'$exists': True}}}, multi=True)
+  nonpcol.update(  {}, {'$pull': {'toprated':        {'$exists': True}}}, multi=True)
+  userscol.update( {}, {'$pull': {'similiar_users':  {'$exists': True}}}, multi=True)
+  recipecol.update({}, {'$pull': {'similiar_items':  {'$exists': True}}}, multi=True)
 #endregion
 
 def recommend():
@@ -246,9 +265,11 @@ def recommend():
   similar_people()
   print "6. computing similar recipes/items"
   similar_items()
-  print "7. computing content based recommendations"
-  content_based()
-  print "8. computing collaborative filtering"
+  print "7. computing content based recommendations by tags"
+  content_based_tags()
+  print "8. computing conent based recommendations byt ingredients"
+  content_based_ingredients()
+  print "9. computing collaborative filtering"
   collaborative_filtering()
 
 recommend()
