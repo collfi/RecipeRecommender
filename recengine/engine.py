@@ -32,6 +32,8 @@ nonpcol = mconnection['recsys'].nonpersonal
 # data
 G_TAGS = nonpcol.NonPersonal.find_one({'_id':1}).get('tags')
 
+# ingredients with IDF only, not TFIDF
+G_INGREDIENTS = {}
 #endregion
 
 #region computing
@@ -262,11 +264,13 @@ def cos_sim_user(user1, user2):
 
 #endregion
 
+
 #region similar items
 def similar_items():
   for item1 in recipecol.Recipe.find():
     sim_item_tags(item1)
-#    sim_item_ingredients(item1)
+    print('----')
+    sim_item_ingredients(item1)
 
 def sim_item_tags(item1):
   sim_array = []
@@ -275,6 +279,7 @@ def sim_item_tags(item1):
     sim_array.append({'itemid':item2['_id'], 'value': cos_sim_recipes_tags(item1, item2)})
   newlist = sorted(sim_array, key=itemgetter('value'), reverse = True)
   print newlist
+
   i = 0
   for item in newlist:
     item1['similiar_items'].append({'itemid': item['itemid'], 'value': item['value']})
@@ -286,7 +291,7 @@ def sim_item_ingredients(item1):
   sim_array = []
   for item2 in recipecol.Recipe.find():
     if item2['_id'] == item1['_id']: continue
-    sim_array.append({'itemid':item2['_id'], 'value': sim_recipes_ingredients(item1, item2)})
+    sim_array.append({'itemid':item2['_id'], 'value': cos_sim_recipes_ingredients(item1, item2)})
   newlist = sorted(sim_array, key=itemgetter('value'), reverse = True)
   print newlist
   i = 0
@@ -296,8 +301,46 @@ def sim_item_ingredients(item1):
     i += 1
     if i == 5: return
 
-def sim_recipes_ingredients(item1, item2):
-  pass
+def cos_sim_recipes_ingredients(item1, item2):
+  global G_INGREDIENTS
+  if item1['_id'] == item2['_id']: return 0.0
+  if len(item1['tags']) == 0 or len(item2['tags']) == 0: return 0.0
+
+  # creating two vectors
+  finalvector = []
+  ivector1 = []
+  ivector2 = []
+  for ingredient in item1['ingredients']:
+    ivector1.append(ingredient['ingredient'])
+    if ingredient['ingredient'] not in finalvector:
+      finalvector.append(ingredient['ingredient'])
+
+  for ingredient in item2['ingredients']:
+    ivector2.append(ingredient['ingredient'])
+    if ingredient['ingredient'] not in finalvector:
+      finalvector.append(ingredient['ingredient'])
+
+  # compute tf-idf
+  vector1 = []
+  vector2 = []
+  for ingredient in finalvector:
+    if ingredient in ivector1: vector1.append((1.0/len(ivector1))*G_INGREDIENTS[ingredient])
+    else: vector1.append(0.0)
+    if ingredient in ivector2: vector2.append((1.0/len(ivector2))*G_INGREDIENTS[ingredient])
+    else: vector2.append(0.0)
+
+  # and now compute similarity
+  numerator, pow1, pow2 = 0.0, 0.0, 0.0
+  for i in range(0,len(finalvector)):
+    numerator = numerator + (vector1[i] * vector2[i])
+    pow1 = pow1 + (vector1[i] * vector1[i])
+    pow2 = pow2 + (vector2[i] * vector2[i])
+
+  denumerator = math.sqrt(pow1) * math.sqrt(pow2)
+  if denumerator == 0.0:
+    return 0.0
+  else:
+    return numerator/denumerator
 
 # cos sim between two recipes based on tags
 #           x.y
@@ -335,6 +378,26 @@ def cos_sim_recipes_tags(item1, item2):
 #endregion
 #endregion
 
+# region idf
+def compute_idf():
+  global G_INGREDIENTS
+  G_INGREDIENTS = {}
+  count_recipes = 0
+  # get all ingredients
+  for recipe in recipecol.Recipe.find():
+    count_recipes = count_recipes + 1
+    for ingredient in recipe['ingredients']:
+      if not G_INGREDIENTS.get(ingredient['ingredient']):
+        G_INGREDIENTS[ingredient['ingredient']] = 1
+      else:
+        G_INGREDIENTS[ingredient['ingredient']] = G_INGREDIENTS[ingredient['ingredient']] + 1
+  # compute idf
+  for ingredient in G_INGREDIENTS.keys():
+    #print 'computing ', ingredient, 'log(',count_recipes,'/',ingredients[ingredient],')'
+    G_INGREDIENTS[ingredient]  = math.log10(float(count_recipes) / float(G_INGREDIENTS[ingredient]))
+    #print ingredient,':',ingredients[ingredient]
+# endregion
+
 #region clean
 def clear():
   pass
@@ -357,13 +420,15 @@ def recommend():
   hackernews_interesting()
   print "5. computing similar people"
   similar_people()
-  print "6. computing similar recipes/items"
+  print "6. computing idf"
+  compute_idf()
+  print "7. computing similar recipes/items"
   similar_items()
-  print "7. computing content based recommendations by tags"
+  print "8. computing content based recommendations by tags"
   content_based_tags()
-  print "8. computing conent based recommendations byt ingredients"
+  print "9. computing conent based recommendations byt ingredients"
   content_based_ingredients()
-  print "9. computing collaborative filtering"
+  print "10. computing collaborative filtering"
   collaborative_filtering()
 
 recommend()
