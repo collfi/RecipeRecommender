@@ -30,8 +30,7 @@ recipecol = mconnection['recsys'].recipes
 nonpcol = mconnection['recsys'].nonpersonal
 
 # data
-tags = nonpcol.NonPersonal.find_one({'_id':1}).get('tags')
-#tags = data.get('tags')
+G_TAGS = nonpcol.NonPersonal.find_one({'_id':1}).get('tags')
 
 #endregion
 
@@ -49,9 +48,6 @@ def mostfavorite():
   fav_sorted.reverse()
   fav_sorted = fav_sorted[:10]
   #alebo fav_sorted = fav_sorted.reverse()[:5]??
-  nonitem = nonpcol.NonPersonal()
-  nonitem['_id'] = 1
-  nonitem.save()
   for item in fav_sorted:
     recipe = nonpcol.NonPersonal.find_one({'_id': 1})
     recipe['topfavorites'].append(int(item[0]))
@@ -215,6 +211,7 @@ def similar_people():
 def sim_person(user1):
   sim_array = []
   for user2 in userscol.User.find():
+    if user1['_id'] == user2['_id']: continue
     sim_array.append({'userid':user2['_id'], 'value':cos_sim_user(user1,user2)})
   newlist = sorted(sim_array, key=itemgetter('value'), reverse = True)
 
@@ -268,42 +265,62 @@ def cos_sim_user(user1, user2):
 #region similar items
 def similar_items():
   for item1 in recipecol.Recipe.find():
-    sim_item(item1)
+    sim_item_tags(item1)
+#    sim_item_ingredients(item1)
 
-def sim_item(item1):
+def sim_item_tags(item1):
   sim_array = []
   for item2 in recipecol.Recipe.find():
-    print "1"
+    if item2['_id'] == item1['_id']: continue
     sim_array.append({'itemid':item2['_id'], 'value': cos_sim_recipes_tags(item1, item2)})
   newlist = sorted(sim_array, key=itemgetter('value'), reverse = True)
-  print sim_array
+  print newlist
   i = 0
   for item in newlist:
     item1['similiar_items'].append({'itemid': item['itemid'], 'value': item['value']})
     item1.save()
     i += 1
-    if i == 2: return
+    if i == 5: return
+
+def sim_item_ingredients(item1):
+  sim_array = []
+  for item2 in recipecol.Recipe.find():
+    if item2['_id'] == item1['_id']: continue
+    sim_array.append({'itemid':item2['_id'], 'value': sim_recipes_ingredients(item1, item2)})
+  newlist = sorted(sim_array, key=itemgetter('value'), reverse = True)
+  print newlist
+  i = 0
+  for item in newlist:
+    item1['similiar_items'].append({'itemid': item['itemid'], 'value': item['value']})
+    item1.save()
+    i += 1
+    if i == 5: return
+
+def sim_recipes_ingredients(item1, item2):
+  pass
 
 # cos sim between two recipes based on tags
 #           x.y
 # cos  = ---------
 #         |x|.|y|
 def cos_sim_recipes_tags(item1, item2):
-  global tags
+  global G_TAGS
   if item1['_id'] == item2['_id']: return 0.0
   if len(item1['tags']) == 0 or len(item2['tags']) == 0: return 0.0
-  vector1, vector2 = [], []
 
-  for tag in tags:
-    print tag
+  vector1 = []
+  vector2 = []
+
+  for tag in G_TAGS:
+    #print tag
     if tag in item1['tags']: vector1.append(1.0)
     else: vector1.append(0.0)
     if tag in item2['tags']: vector2.append(1.0)
     else: vector2.append(0.0)
-  print vector1
+  #print vector1
   numerator, pow1, pow2 = 0.0, 0.0, 0.0
 
-  for i in range(0, len(tags)):
+  for i in range(0, len(G_TAGS)):
     numerator = numerator + (vector1[i] * vector2[i])
     pow1 = pow1 + (vector1[i] * vector1[i])
     pow2 = pow2 + (vector2[i] * vector2[i])
@@ -320,9 +337,10 @@ def cos_sim_recipes_tags(item1, item2):
 
 #region clean
 def clear():
+  pass
   # we clean some "columns" not entire document
-  nonpcol.update(  {}, {'$pull': {'topfavorites':    {'$exists': True}}}, multi=True)
-  nonpcol.update(  {}, {'$pull': {'toprated':        {'$exists': True}}}, multi=True)
+  nonpcol.update({'_id': 1}, {'$pull': {'topfavorites':    {'$exists': True}}}, multi=True)
+  nonpcol.update({'_id': 1}, {'$pull': {'toprated':        {'$exists': True}}}, multi=True)
   userscol.update( {}, {'$pull': {'similiar_users':  {'$exists': True}}}, multi=True)
   recipecol.update({}, {'$pull': {'similiar_items':  {'$exists': True}}}, multi=True)
 #endregion

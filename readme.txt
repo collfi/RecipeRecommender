@@ -33,3 +33,5 @@ ideas:
 -zobrazovanie obrazkov
 -follovovanie friendov
 -uzivatelsky profil, na aku dietu sa zameriavat
+-verifikovane recepty
+-na hlavnej stranke dat tagy paleo, vegan, ...

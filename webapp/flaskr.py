@@ -36,7 +36,7 @@ app.config.from_object('config.Config')
 
 #region misc
 def init_mongodb():
-  recommender.init_mongodb(mconnection)
+  recommender.init_mongodbnew(mconnection)
 
 def allowed_file(filename):
   return '.' in filename and \
@@ -154,23 +154,21 @@ def add_entry():
   # create in mongo
   recipemongo = recipecol.Recipe()
   recipemongo['_id'] = recipe.id
-  recipemongo['tags'] = request.form['tags'].split(',')
+  recipemongo['tags'] = tags
   recipemongo.save()
   # get ingredients
   count = 0
   nextIng = True
 
   #add to nonpersonal all tags
-  tags = request.form['tags'].split(',')
   data = nonpcol.NonPersonal.find_one({'_id':1})
 
   for tag in tags:
-    if tag not in data.get_tags():
-      print tag
+    if tag not in data.get('tags'):
       data['tags'].append(unicode(tag))
-
   data.save()
 
+  # and ingredients
   while nextIng:
     if 'ingredient_' + str(count) in request.form:
       name = request.form['ingredient_' + str(count)]
@@ -210,8 +208,6 @@ def edit_entry():
     else:
       print ("no more ingredients")
       nextIng = False
-  #---------------------------------
-  print recipemongo['tags']
   recipemongo.save()
   return redirect(url_for('show_entries', headline="Recipes", tags=','.join(recipemongo['tags'])))
 
@@ -232,28 +228,34 @@ def show_entry(id):
 
   # has user already faved the item?
   user = userscol.User.find_one({'_id': session['user_in'], 'favorites': int(id)})
-  # has user already rated the idem?
-  #rated  = userscol.find_one({'_id': session['user_in'], 'ratings.itemid': int(id)}, {'ratings.value': 1, '_id':1})
   rated  = userscol.find_one({'_id': session['user_in'], 'ratings.itemid': int(id)}, {'ratings.itemid': 1,
-                                                                                      'ratings.value': 1, '_id': 0})
-  #je to dobre? ja som myslel, ze to vybere vzdy iba jeden rating, ale ono ro vybere vsetky od uzivatela
-  #a potom ich musim prechadzat vo tom for, da sa to spravit aby to vybralo iba 1 konkretny pre ten recept
-  #a ja som dal nieco take ako rated.get('ratings')[0].get('value')??
+                                                                           'ratings.value': 1, '_id': 0})
   value = 0
-
   if rated:
     for item in rated.get('ratings'):
       if item.get('itemid') == int(id):
         value = item.get('value')
 
   entry = db_session.query(Recipe).get(id)
+
+  # get tags
   rec = recipecol.Recipe.find_one({'_id': int(id)})
   tags = ','.join(rec['tags'])
+
+  # now show similiar recipes
+  simrecipes_ids = rec['similiar_items']
+  simrecipes = []
+  for recipe_id in simrecipes_ids:
+    simrecipes.append(db_session.query(Recipe).get(recipe_id['itemid']))
+
+  print simrecipes_ids
+
+  # if is users logged in recipe then he can edit it
   if user:
     favorited = True
   if entry.userid == session['user_in']:
     canedit = True
-  return render_template('show_entry.html', entry=entry, canedit=canedit, favorited=favorited, value=value, rec=rec, tags=tags)
+  return render_template('show_entry.html', entry=entry, canedit=canedit, favorited=favorited, value=value, rec=rec, tags=tags, simrecipes=simrecipes)
 #endregion
 
 #region recommendations
