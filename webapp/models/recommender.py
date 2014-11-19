@@ -77,7 +77,8 @@ class NonPersonal(Document):
     return '<NonPersonal %r>' % (self._id)
 
 
-def init_mongodb(mconnection):
+def init_mongodbnew(mconnection):
+  print("INITIALIZING MONGODB")
   userscol = mconnection['recsys'].users
   userscol.drop()
   recipecol = mconnection['recsys'].recipes
@@ -126,7 +127,6 @@ def init_mongodb(mconnection):
   nonpcol['tags'].append(u"seeds")
   nonpcol['tags'].append(u"sour")
   nonpcol.save()
-  print nonpcol['tags']
 
   recipe = recipecol.Recipe()
   recipe['_id'] = 1
@@ -184,3 +184,7 @@ def init_mongodb(mconnection):
   user3 = userscol.User()
   user3['_id'] = 'cospel'
   user3.save()
+
+
+if __name__ == '__main__':
+  pass

@@ -104,19 +104,20 @@ $(document).ready(function(){
     <br/>
     <br/>
     <br/>
- <h3>Similar recipes</h3>
+ <div id="sim_recipes">
+ <i><h3>Similar recipes</h3></i>
  <table class="colors">
     <tbody>
     <tr>
-        <th>Name</th><th>Rating</th>
+        <th>Name</th>
     </tr>
+    {% for recipe in simrecipes %}
     <tr>
-        <td>Recipe 1</td><td>5</td>
+        <td><a href="{{ url_for('show_entry', id=recipe.id) }}">{{ recipe.title }}</a></td>
     </tr>
-    <tr>
-        <td>Recipe 2</td><td>2</td>
-    </tr>
+    {% endfor %}
     </tbody>
  </table>
+ </div>
 </div>
 {% endblock %}

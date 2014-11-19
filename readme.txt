@@ -28,3 +28,10 @@ ideas:
 -gamifikacia
 -http://amix.dk/blog/post/19574
 -http://amix.dk/blog/post/19588 spravit page interesting ktore by vyuzivali favorites
+-kalorie, nutrienty, pocet ludi, cena pre jedla
+-uvodna stranka
+-zobrazovanie obrazkov
+-follovovanie friendov
+-uzivatelsky profil, na aku dietu sa zameriavat
+-verifikovane recepty
+-na hlavnej stranke dat tagy paleo, vegan, ...
