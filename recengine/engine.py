@@ -264,7 +264,6 @@ def cos_sim_user(user1, user2):
 
 #endregion
 
-
 #region similar items
 def similar_items():
   for item1 in recipecol.Recipe.find():
@@ -272,6 +271,7 @@ def similar_items():
     sim_item_ingredients(item1)
     #print('-----')
 
+# compute similiar items for item through tag
 def sim_item_tags(item1):
   sim_array = []
   for item2 in recipecol.Recipe.find():
@@ -286,6 +286,7 @@ def sim_item_tags(item1):
     i += 1
     if i == 5: return
 
+# compute similiar items for item through the tf-idf with ingredients
 def sim_item_ingredients(item1):
   sim_array = []
   for item2 in recipecol.Recipe.find():
@@ -295,12 +296,19 @@ def sim_item_ingredients(item1):
 
   i = 0
   for item in newlist:
+    # if the item was not previously added through tag similarity
     if not filter(lambda simitem: simitem['itemid'] == item['itemid'], item1['similiar_items']):
       item1['similiar_items'].append({'itemid': item['itemid'], 'value': item['value']})
       item1.save()
       i += 1
     if i == 5: return
 
+
+# cos sim between two recipes based on ingredients
+# the vector space model is based on tf-idf
+#           x.y
+# cos  = ---------
+#         |x|.|y|
 def cos_sim_recipes_ingredients(item1, item2):
   global G_INGREDIENTS
   if item1['_id'] == item2['_id']: return 0.0
@@ -375,10 +383,11 @@ def cos_sim_recipes_tags(item1, item2):
     return numerator/denumerator
 
 #endregion
-#endregion
-#endregion
 
 # region idf
+# compute idf for all ingredients in recipes
+# and save it to global variable G_INGREDIENTS
+# then we can use the idf later
 def compute_idf():
   global G_INGREDIENTS
   G_INGREDIENTS = {}
@@ -397,6 +406,9 @@ def compute_idf():
     G_INGREDIENTS[ingredient]  = math.log10(float(count_recipes) / float(G_INGREDIENTS[ingredient]))
     #print ingredient,':',ingredients[ingredient]
 # endregion
+
+#endregion
+#endregion
 
 #region clean
 def clear():
