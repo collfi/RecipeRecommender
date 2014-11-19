@@ -111,34 +111,31 @@ def collaborative_filtering():
     pred = []
 
     for r in recipecol.Recipe.find():
-
       if u.getRating(r['_id']) is None:
-
         numerator = 0
         denominator = 0
 
-        for b in u['similiar_users']:
-          #rating
+        for b in u['similar_users']:
           user_b  = userscol.User.find_one({'_id': b['userid']})
-          if u == user_b: break
+          if u == user_b: continue  #vyhodit?
           rating = user_b.getRating(r['_id'])
-          if rating is None: break
-
+          if rating is None: continue
           numerator += (pearson_sim_user(u, user_b) * (rating - average_rating(user_b)))
           denominator += pearson_sim_user(u, user_b)
 
-        if denominator == 0: break
+        if denominator == 0: continue
 
         predicted_rating = average_rating(u) + (numerator / denominator)
         pred.append({'itemid': r['_id'], 'value': predicted_rating})
-    print(u['_id'])
-    print(pred)
+    #print(u['_id'])
+    #print(pred)
     #TODO sort pred
     #TODO add to mongo? create field for predicted items
+    #if user give the same rating to all recipes, similarity will be always 0
+    #sometimes it's like FUCK ME!
 
 #Pearson Correlation Coefficient
 def pearson_sim_user(user1, user2):
-  #if user1['_id'] == user2['_id']: return 0.0  # should be 1.0 but we don't want to compute this #osefovat a vymazat
   if len(user1['ratings']) == 0 or len(user2['ratings']) == 0: return 0.0
 
   # list of mutual ratings
@@ -147,19 +144,20 @@ def pearson_sim_user(user1, user2):
     for item2 in user2['ratings']:
       if item1['itemid'] == item2['itemid']:
         mratings.append({'itemid': item1['itemid'], 'value1': item1['value'], 'value2': item2['value']})
-        break
+        continue
+
   # if are no common ratings
   if len(mratings) == 0: return 0.0
-
 
   #average ratings for users
   average1 = average_rating(user1)
   average2 = average_rating(user2)
+
   den1 = 0
   den2 = 0
   sum1 = 0
   for item in mratings:
-    sum1 += ((item['value1'] - average1) * (item['value2'] - average2))
+    sum1 += (item['value1'] - average1) * (item['value2'] - average2)
     den1 += (item['value1'] - average1) ** 2
     den2 += (item['value2'] - average2) ** 2
   den = (sqrt(den1)) * (sqrt(den2))
@@ -213,7 +211,7 @@ def sim_person(user1):
 
   i = 0
   for item in newlist:
-    user1['similiar_users'].append({'userid':item['userid'],'value':item['value']})
+    user1['similar_users'].append({'userid':item['userid'],'value':item['value']})
     user1.save()
     i += 1
     if i == 7: return
@@ -265,7 +263,7 @@ def similar_items():
     sim_item_ingredients(item1)
     #print('-----')
 
-# compute similiar items for item through tag
+# compute similar items for item through tag
 def sim_item_tags(item1):
   sim_array = []
   for item2 in recipecol.Recipe.find():
@@ -275,12 +273,12 @@ def sim_item_tags(item1):
 
   i = 0
   for item in newlist:
-    item1['similiar_items'].append({'itemid': item['itemid'], 'value': item['value']})
+    item1['similar_items'].append({'itemid': item['itemid'], 'value': item['value']})
     item1.save()
     i += 1
     if i == 5: return
 
-# compute similiar items for item through the tf-idf with ingredients
+# compute similar items for item through the tf-idf with ingredients
 def sim_item_ingredients(item1):
   sim_array = []
   for item2 in recipecol.Recipe.find():
@@ -291,8 +289,8 @@ def sim_item_ingredients(item1):
   i = 0
   for item in newlist:
     # if the item was not previously added through tag similarity
-    if not filter(lambda simitem: simitem['itemid'] == item['itemid'], item1['similiar_items']):
-      item1['similiar_items'].append({'itemid': item['itemid'], 'value': item['value']})
+    if not filter(lambda simitem: simitem['itemid'] == item['itemid'], item1['similar_items']):
+      item1['similar_items'].append({'itemid': item['itemid'], 'value': item['value']})
       item1.save()
       i += 1
     if i == 5: return
@@ -410,8 +408,8 @@ def clear():
   # we clean some "columns" not entire document
   nonpcol.update({'_id': 1}, {'$pull': {'topfavorites':    {'$exists': True}}}, multi=True)
   nonpcol.update({'_id': 1}, {'$pull': {'toprated':        {'$exists': True}}}, multi=True)
-  userscol.update( {}, {'$pull': {'similiar_users':  {'$exists': True}}}, multi=True)
-  recipecol.update({}, {'$pull': {'similiar_items':  {'$exists': True}}}, multi=True)
+  userscol.update( {}, {'$pull': {'similar_users':  {'$exists': True}}}, multi=True)
+  recipecol.update({}, {'$pull': {'similar_items':  {'$exists': True}}}, multi=True)
 #endregion
 
 def recommend():

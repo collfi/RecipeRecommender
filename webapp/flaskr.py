@@ -242,8 +242,8 @@ def show_entry(id):
   rec = recipecol.Recipe.find_one({'_id': int(id)})
   tags = ','.join(rec['tags'])
 
-  # now show similiar recipes
-  simrecipes_ids = rec['similiar_items']
+  # now show similar recipes
+  simrecipes_ids = rec['similar_items']
   simrecipes = []
   for recipe_id in simrecipes_ids:
     simrecipes.append(db_session.query(Recipe).get(recipe_id['itemid']))

@@ -14,8 +14,8 @@ class User(Document):
     #'_id' : str,
     # value is rating, itemid is id of item
     'ratings' : [{'itemid' : int, 'value' : float, 'date_creation' : datetime}],
-    # value is similiarity
-    'similiar_users' : [{'userid' : unicode, 'value' : float}],
+    # value is similarity
+    'similar_users' : [{'userid' : unicode, 'value' : float}],
     # these are ids of recipes
     'favorites' : [ int],
   }
@@ -45,8 +45,8 @@ class Recipe(Document):
     'favorites' : [ unicode ],
     'ingredients' : [{'ingredient':unicode, 'number': unicode}],
     'tags' : [ unicode ],
-    # value is similiarity
-    'similiar_items' : [ {'itemid' : int, 'value' : float} ],
+    # value is similarity
+    'similar_items' : [ {'itemid' : int, 'value' : float} ],
   }
   default_values = {'date_creation':datetime.now()}
 
