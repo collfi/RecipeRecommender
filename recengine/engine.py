@@ -295,9 +295,10 @@ def sim_item_ingredients(item1):
 
   i = 0
   for item in newlist:
-    item1['similiar_items'].append({'itemid': item['itemid'], 'value': item['value']})
-    item1.save()
-    i += 1
+    if not filter(lambda simitem: simitem['itemid'] == item['itemid'], item1['similiar_items']):
+      item1['similiar_items'].append({'itemid': item['itemid'], 'value': item['value']})
+      item1.save()
+      i += 1
     if i == 5: return
 
 def cos_sim_recipes_ingredients(item1, item2):
