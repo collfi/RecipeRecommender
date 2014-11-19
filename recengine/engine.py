@@ -269,8 +269,8 @@ def cos_sim_user(user1, user2):
 def similar_items():
   for item1 in recipecol.Recipe.find():
     sim_item_tags(item1)
-    print('----')
     sim_item_ingredients(item1)
+    #print('-----')
 
 def sim_item_tags(item1):
   sim_array = []
@@ -278,7 +278,6 @@ def sim_item_tags(item1):
     if item2['_id'] == item1['_id']: continue
     sim_array.append({'itemid':item2['_id'], 'value': cos_sim_recipes_tags(item1, item2)})
   newlist = sorted(sim_array, key=itemgetter('value'), reverse = True)
-  print newlist
 
   i = 0
   for item in newlist:
@@ -293,7 +292,7 @@ def sim_item_ingredients(item1):
     if item2['_id'] == item1['_id']: continue
     sim_array.append({'itemid':item2['_id'], 'value': cos_sim_recipes_ingredients(item1, item2)})
   newlist = sorted(sim_array, key=itemgetter('value'), reverse = True)
-  print newlist
+
   i = 0
   for item in newlist:
     item1['similiar_items'].append({'itemid': item['itemid'], 'value': item['value']})
@@ -329,7 +328,7 @@ def cos_sim_recipes_ingredients(item1, item2):
     if ingredient in ivector2: vector2.append((1.0/len(ivector2))*G_INGREDIENTS[ingredient])
     else: vector2.append(0.0)
 
-  # and now compute similarity
+  # and now compute cosine similarity
   numerator, pow1, pow2 = 0.0, 0.0, 0.0
   for i in range(0,len(finalvector)):
     numerator = numerator + (vector1[i] * vector2[i])
