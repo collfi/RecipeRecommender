@@ -4,8 +4,8 @@ from mongokit import Connection
 import sys
 import math
 # i need to add this because of imports
-sys.path.append('/home/michal/Desktop/RECSYS/RecipeRecommender/')
-#sys.path.append('/home/collfi/RecSys/RecipeRecommender/')
+#sys.path.append('/home/michal/Desktop/RECSYS/RecipeRecommender/')
+sys.path.append('/home/collfi/RecSys/RecipeRecommender/')
 from sqlalchemy import and_
 from webapp.models import recommender
 from datetime import datetime
@@ -126,35 +126,28 @@ def collaborative_filtering():
     pred = []
 
     for r in recipecol.Recipe.find():
-
-      # if we want to predict not rated item
       if u.getRating(r['_id']) is None:
-
         numerator = 0
         denominator = 0
 
         for b in u['similar_users']:
-          #rating
           user_b  = userscol.User.find_one({'_id': b['userid']})
-          if u == user_b: break
           rating = user_b.getRating(r['_id'])
-          if rating is None: break
+          if rating is None: continue
 
           numerator += (pearson_sim_user(u, user_b) * (rating - user_b['avgrating']))
           denominator += pearson_sim_user(u, user_b)
 
-        if denominator == 0: break
+        if denominator == 0: continue
 
         predicted_rating = u['avgrating'] + (numerator / denominator)
         pred.append({'itemid': r['_id'], 'value': predicted_rating})
-    print(u['_id'])
-    print(pred)
-    #TODO sort pred
-    #TODO add to mongo? create field for predicted items
+
+    newlist = sorted(pred, key=itemgetter('value'), reverse=True)
+    u['predicted'] = newlist[:10]
 
 #Pearson Correlation Coefficient
 def pearson_sim_user(user1, user2):
-  #if user1['_id'] == user2['_id']: return 0.0  # should be 1.0 but we don't want to compute this #osefovat a vymazat
   if len(user1['ratings']) == 0 or len(user2['ratings']) == 0: return 0.0
 
   # list of mutual ratings
@@ -163,21 +156,21 @@ def pearson_sim_user(user1, user2):
     for item2 in user2['ratings']:
       if item1['itemid'] == item2['itemid']:
         mratings.append({'itemid': item1['itemid'], 'value1': item1['value'], 'value2': item2['value']})
-        break
+        continue
   # if are no common ratings
   if len(mratings) == 0: return 0.0
 
 
   #average ratings for users
-  average1 = user1['avgrating']
-  average2 = user2['avgrating']
+  avg1 = user1['avgrating']
+  avg2 = user2['avgrating']
   den1 = 0
   den2 = 0
   sum1 = 0
   for item in mratings:
-    sum1 += ((item['value1'] - average1) * (item['value2'] - average2))
-    den1 += (item['value1'] - average1) ** 2
-    den2 += (item['value2'] - average2) ** 2
+    sum1 += ((item['value1'] - avg1) * (item['value2'] - avg2))
+    den1 += (item['value1'] - avg1) ** 2
+    den2 += (item['value2'] - avg2) ** 2
   den = (sqrt(den1)) * (sqrt(den2))
   if den == 0.0:
     return 0.0
