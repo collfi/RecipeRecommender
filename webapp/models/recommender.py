@@ -45,6 +45,7 @@ class Recipe(Document):
     'favorites' : [ unicode ],
     'ingredients' : [{'ingredient':unicode, 'number': unicode}],
     'tags' : [ unicode ],
+    'avgrating' : float,
     # value is similiarity
     'similiar_items' : [ {'itemid' : int, 'value' : float} ],
   }

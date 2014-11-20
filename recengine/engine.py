@@ -4,9 +4,9 @@ from mongokit import Connection
 import sys
 import math
 # i need to add this because of imports
-#sys.path.append('/home/michal/Desktop/RECSYS/RecipeRecommender/')
-sys.path.append('/home/collfi/RecSys/RecipeRecommender/')
-from sqlalchemy import and_
+sys.path.append('/home/michal/Desktop/RECSYS/RecipeRecommender/')
+#sys.path.append('/home/collfi/RecSys/RecipeRecommender/')
+
 from webapp.models import recommender
 from datetime import datetime
 from math import sqrt
@@ -68,13 +68,8 @@ def averagerating():
       sum = sum + item.get('ratings')[0]['value']
       count = count +1
     try:
-      average = float(sum/float(count))
-      # and now save to db
-      # find the item in our sqldb and update and save it
-      q = db_session.query(Recipe).filter(Recipe.id == idrecipe)
-      recipe = q.one()
-      recipe.avgrating = average
-      db_session.commit()
+      item['avgrating'] = float(sum/float(count))
+      item.save()
     except:
       #if it is exception division by zero, just skip it
       pass
