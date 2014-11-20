@@ -24,11 +24,21 @@ class User(Document):
   use_dot_notation = True
   #required_fields = ['_id']
   #default_values = {...}
-  def getRating(self,itemid):
+
+  # returns none if user dont rate item with
+  # itemid, else it returns value of his rating
+  def getRating(self, itemid):
     for rate in self.ratings:
       if rate['itemid'] == itemid:
         return rate['value']
     return None
+
+  def getHighlyRatedItems(self):
+    vector = []
+    for rate in self.ratings:
+      if rate['value'] >= 4:
+        vector.append(rate['itemid'])
+    return vector
 
   def print_ratings(self):
     print "ratings:", self.ratings

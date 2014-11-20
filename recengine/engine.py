@@ -186,24 +186,60 @@ def pearson_sim_user(user1, user2):
 #endregion
 
 #region content-based
-def content_based_tags():
+def content_based():
+  global G_TAGS, G_INGREDIENTS
   # 1. build user profiles
   for user in userscol.User.find():
-    # 2. get favorited items
-    favitems = user.get('favorites')
-    # 3. and build user profiles by tags and ingredients
-    for item in favitems:
-      vector = get_recipe_tagvector()
-    # 4. you can get also rated items
-    #    and build weighted user profiles by tags and ingredients
-  # 5. predicting items, cos(user,item)
+    # 2. get favorited items and items which user ranked 4 or five
+    gooditems = list(set(user['favorites'] + user.getHighlyRatedItems()))
+    if len(gooditems) == 0: continue
+
+    uservectortag = [0] * len(G_TAGS)
+    useringredient = {}
+    for recipeid in gooditems:
+      # get the recipe
+      recipe = recipecol.Recipe.find_one({'_id':recipeid})
+
+      # compute user profile by tags
+      vectortag = get_recipe_tagvector(recipe)
+      uservectortag = sum_vectors(uservectortag, vectortag)
+
+      # compute user profile by ingredients with tfidf
+      for ingredient in recipe['ingredients']:
+        if useringredient.get(ingredient['ingredient']):
+          useringredient[ingredient['ingredient']] += G_INGREDIENTS[ingredient['ingredient']]
+        else:
+          useringredient[ingredient['ingredient']] = G_INGREDIENTS[ingredient['ingredient']]
+
+    # final two user profiles by tags and ingredients
+    userprofiletag = [value/float(len(gooditems)) for value in uservectortag]
+    userprofileingredient = [{'name': key, 'value': useringredient[key]/float(len(gooditems))} for key in useringredient]
+
+    print userprofiletag
+    print userprofileingredient
+
+    # 5. predicting items, cos(user,item), we can use hybrid
+#    for recipe in recipecol.Recipe.find():
+#      scoretag = compute_tag_recipe_user_sim()
+#      scoreing = compute_ing_recipe_user_sim()
+#      score = scoretag + scoreing
+#    save the best for the user
   pass
 
-def content_based_ingredients():
-  pass
+def sum_vectors(vector1,vector2):
+  for i in range(0,len(vector1)):
+    vector2[i] += vector1[i]
+  return vector2
 
-def get_recipe_tagvector():
-  return None
+def get_recipe_tagvector(recipe):
+  global G_TAGS
+  vector = []
+  for tag in G_TAGS:
+    if tag in recipe['tags']:
+      vector.append(1.0)
+    else:
+      vector.append(0.0)
+  return vector
 #endregion
 
 #region similar people
@@ -436,10 +472,8 @@ def recommend():
   print "7. computing similar recipes/items"
   similar_items()
   print "8. computing content based recommendations by tags"
-  content_based_tags()
-  print "9. computing conent based recommendations byt ingredients"
-  content_based_ingredients()
-  print "10. computing collaborative filtering"
+  content_based()
+  print "9. computing collaborative filtering"
   collaborative_filtering()
 
 recommend()
