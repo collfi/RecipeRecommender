@@ -77,8 +77,8 @@ def average_ratings_recipes():
     idrecipe = item.get('_id')
     sum = 0.0; count = 0
     # compute average for specified item
-    for item in userscol.User.find({'ratings':{'$elemMatch':{'itemid':idrecipe}}},{'ratings.$':1}):
-      sum = sum + item.get('ratings')[0]['value']
+    for item1 in userscol.User.find({'ratings':{'$elemMatch':{'itemid':idrecipe}}},{'ratings.$':1}):
+      sum = sum + item1.get('ratings')[0]['value']
       count = count +1
     try:
       item['avgrating'] = float(sum/float(count))
