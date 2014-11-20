@@ -13,10 +13,6 @@ from math import sqrt
 #endregion
 
 #region database
-# this is our sqlalchemy orm which works with our
-# simple sqlite database to store basic data
-from webapp.models.database import db_session, init_db
-from webapp.models.models import User, Recipe
 
 # create our mongodb connection and register models
 # this is our recommender computing database
