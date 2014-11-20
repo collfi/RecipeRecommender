@@ -6,7 +6,7 @@ import math
 # i need to add this because of imports
 sys.path.append('/home/michal/Desktop/RECSYS/RecipeRecommender/')
 #sys.path.append('/home/collfi/RecSys/RecipeRecommender/')
-
+from sqlalchemy import and_
 from webapp.models import recommender
 from datetime import datetime
 from math import sqrt
@@ -69,7 +69,6 @@ def averagerating():
       count = count +1
     try:
       item['avgrating'] = float(sum/float(count))
-      item.save()
     except:
       #if it is exception division by zero, just skip it
       pass
