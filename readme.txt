@@ -10,13 +10,13 @@ git pull origin master
 
 todo:
 Collfi do nedele 30.11:
-- collaborative filtering
+- collaborative filtering ALMOSTDONE
 - sql -> mongodb, v engine.py som to uz prerobil, este treba flaskr.py a podoplnat tabulky do recommender.py
   potom smazeme models.py a database.py
 
 Cospel do nedele 30.11:
 - podobnost dvoch receptov DONE
-- content based recommender: vymysliet ako vytvorit podobnost dvoch receptov, zamysliet sa nad user profilom
+- content based recommender: zamysliet sa nad user profilom a spravit
 - rychle tagy
 
 ideas:
