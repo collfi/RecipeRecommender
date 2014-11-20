@@ -16,7 +16,9 @@ class User(Document):
     'ratings' : [{'itemid' : int, 'value' : float, 'date_creation' : datetime}],
     # value is similarity
     'similar_users' : [{'userid' : unicode, 'value' : float}],
-    # these are ids of recipes
+    # average rating
+    'avgrating' : float,
+    # these are ids of recipes which user has faved
     'favorites' : [ int],
   }
   use_dot_notation = True
@@ -42,10 +44,13 @@ class Recipe(Document):
     # _id is id of recipe
     #favorites is list of user ids
     'date_creation' : datetime,
+    # ids of users which faved this recipe
     'favorites' : [ unicode ],
     'ingredients' : [{'ingredient':unicode, 'number': unicode}],
     'tags' : [ unicode ],
     'avgrating' : float,
+    # interesting score by hacker news formula
+    'interesting' : float,
     # value is similarity
     'similar_items' : [ {'itemid' : int, 'value' : float} ],
   }
@@ -65,6 +70,8 @@ class NonPersonal(Document):
       'tags' : [ unicode ],
       'topfavorites' : [ int ],
       'toprated' : [ int ],
+      # by interesting/hacker news formula
+      'topinteresting' : [ int ]
   }
   use_dot_notation = True
 

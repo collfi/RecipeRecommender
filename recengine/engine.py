@@ -39,9 +39,27 @@ G_INGREDIENTS = {}
 #region computing
 #region nonpersonalized
 
+#region precompute
+def precompute_avg_userratings():
+  for user in userscol.User.find():
+    user['avgrating'] = average_rating_user(user)
+    user.save()
+
+def average_rating_user(user):
+  average = 0.0
+  if len(user['ratings']) != 0:
+    for item in user['ratings']:
+      average += (item['value'])
+    average /= len(user['ratings'])
+  return average
+
+def precompute():
+  precompute_avg_userratings()
+#endregion
+
 # Computing simple most favorite items as number of favorites
 # and then save it to nonpcol document to 'topfavorites'
-def mostfavorite():
+def most_favorite():
   fav = []
   for item in recipecol.Recipe.find():
     #fav[item.get('_id')] = len(item.get('favorites'))
@@ -58,8 +76,7 @@ def mostfavorite():
 # Computing average ratings for every recipe
 # and then save it to sql database to recipe
 # this function precomputes average ratings for bestrated function
-def averagerating():
-  fav = []
+def average_ratings_recipes():
   for item in recipecol.Recipe.find():
     idrecipe = item.get('_id')
     sum = 0.0; count = 0
@@ -69,28 +86,36 @@ def averagerating():
       count = count +1
     try:
       item['avgrating'] = float(sum/float(count))
+      item.save()
     except:
       #if it is exception division by zero, just skip it
       pass
 
 # get best items from sql and save it to our
 # document database.
-def bestrated():
-  recipes = Recipe.query.order_by(Recipe.avgrating.desc()).limit(15).all()
+def best_rated():
+  recipes = recipecol.Recipe.find().sort('avgrating',1).limit(15)
   for item in recipes:
     recipe=nonpcol.NonPersonal.find_one({'_id':1})
-    recipe['toprated'].append(int(item.id))
+    recipe['toprated'].append(int(item['_id']))
     recipe.save()
 
 # hackernews like interested, #http://amix.dk/blog/post/19574
 # compute interesting items right now by votes/favorites
 def hackernews_interesting():
+  interest = []
   for item in recipecol.Recipe.find():
     hours = abs(datetime.now() - item.get('date_creation')).total_seconds() / 3600.0
-    score = hackernews_score(len(item.get('favorites')), hours)
-    q = db_session.query(Recipe).filter(Recipe.id == item.get('_id'))
-    recipe = q.one()
-    recipe.interested = score
+    item['interesting'] = hackernews_score(len(item.get('favorites')), hours)
+    item.save()
+    interest.append((item.get('_id'),  item['interesting']))
+  interest_sorted = sorted(interest, key=lambda tup: tup[1])
+  interest_sorted.reverse()
+  interest_sorted = interest_sorted[:10]
+  for item in interest_sorted:
+    recipe = nonpcol.NonPersonal.find_one({'_id': 1})
+    recipe['topinteresting'].append(int(item[0]))
+    recipe.save()
 
 def hackernews_score(votes, item_hour_age, gravity=1.8):
   return (votes + 1) / pow((item_hour_age+2), gravity)
@@ -106,6 +131,7 @@ def collaborative_filtering():
 
     for r in recipecol.Recipe.find():
 
+      # if we want to predict not rated item
       if u.getRating(r['_id']) is None:
 
         numerator = 0
@@ -118,12 +144,12 @@ def collaborative_filtering():
           rating = user_b.getRating(r['_id'])
           if rating is None: break
 
-          numerator += (pearson_sim_user(u, user_b) * (rating - average_rating(user_b)))
+          numerator += (pearson_sim_user(u, user_b) * (rating - user_b['avgrating']))
           denominator += pearson_sim_user(u, user_b)
 
         if denominator == 0: break
 
-        predicted_rating = average_rating(u) + (numerator / denominator)
+        predicted_rating = u['avgrating'] + (numerator / denominator)
         pred.append({'itemid': r['_id'], 'value': predicted_rating})
     print(u['_id'])
     print(pred)
@@ -147,8 +173,8 @@ def pearson_sim_user(user1, user2):
 
 
   #average ratings for users
-  average1 = average_rating(user1)
-  average2 = average_rating(user2)
+  average1 = user1['avgrating']
+  average2 = user2['avgrating']
   den1 = 0
   den2 = 0
   sum1 = 0
@@ -161,14 +187,6 @@ def pearson_sim_user(user1, user2):
     return 0.0
   return sum1/den  #TODO: * 1/min(common items, threshold) OR just put constant in denominator
 
-
-def average_rating(user):
-  average = 0.0
-  if len(user['ratings']) != 0:
-    for item in user['ratings']:
-      average += (item['value'])
-    average /= len(user['ratings'])
-  return average
 #endregion
 
 #region content-based
@@ -248,8 +266,6 @@ def cos_sim_user(user1, user2):
     numerator = numerator + (rating1 * rating2)
 
   return numerator/denumerator
-
-
 #endregion
 
 #region similar items
@@ -290,7 +306,6 @@ def sim_item_ingredients(item1):
       item1.save()
       i += 1
     if i == 5: return
-
 
 # cos sim between two recipes based on ingredients
 # the vector space model is based on tf-idf
@@ -382,17 +397,15 @@ def compute_idf():
   count_recipes = 0
   # get all ingredients
   for recipe in recipecol.Recipe.find():
-    count_recipes = count_recipes + 1
+    count_recipes += 1
     for ingredient in recipe['ingredients']:
       if not G_INGREDIENTS.get(ingredient['ingredient']):
         G_INGREDIENTS[ingredient['ingredient']] = 1
       else:
-        G_INGREDIENTS[ingredient['ingredient']] = G_INGREDIENTS[ingredient['ingredient']] + 1
+        G_INGREDIENTS[ingredient['ingredient']] += 1
   # compute idf
   for ingredient in G_INGREDIENTS.keys():
-    #print 'computing ', ingredient, 'log(',count_recipes,'/',ingredients[ingredient],')'
-    G_INGREDIENTS[ingredient]  = math.log10(float(count_recipes) / float(G_INGREDIENTS[ingredient]))
-    #print ingredient,':',ingredients[ingredient]
+    G_INGREDIENTS[ingredient] = math.log10(float(count_recipes) / float(G_INGREDIENTS[ingredient]))
 # endregion
 
 #endregion
@@ -410,12 +423,14 @@ def clear():
 
 def recommend():
   clear()
+  print "0. precompute avg.rating users"
+  precompute()
   print "1. computing most favorite items"
-  mostfavorite()
+  most_favorite()
   print "2. computing average ratings for items"
-  averagerating()
+  average_ratings_recipes()
   print "3. computing best rated items"
-  bestrated()
+  best_rated()
   print "4. computing interesting with hacker news formula"
   hackernews_interesting()
   print "5. computing similar people"

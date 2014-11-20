@@ -281,8 +281,11 @@ def recommend():
 
 @app.route('/interesting', methods=['GET'])
 def interesting():
-  recipes = Recipe.query.order_by(Recipe.interested.desc()).limit(15).all()
-  return render_template('show_entries.html', entries=recipes, headline="Interesting")
+  recipe = nonpcol.NonPersonal.find_one({'_id':1})
+  q = db_session.query(Recipe)
+  q = q.filter(Recipe.id.in_(recipe['topinteresting']))
+  entries = q.all()
+  return render_template('show_entries.html', entries=entries, headline="Interesting")
 #endregion
 #endregion
 
