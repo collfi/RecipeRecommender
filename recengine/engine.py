@@ -111,7 +111,7 @@ def collaborative_filtering():
         numerator = 0
         denominator = 0
 
-        for b in u['similiar_users']:
+        for b in u['similar_users']:
           #rating
           user_b  = userscol.User.find_one({'_id': b['userid']})
           if u == user_b: break
@@ -207,7 +207,7 @@ def sim_person(user1):
 
   i = 0
   for item in newlist:
-    user1['similiar_users'].append({'userid':item['userid'],'value':item['value']})
+    user1['similar_users'].append({'userid':item['userid'],'value':item['value']})
     user1.save()
     i += 1
     if i == 7: return
@@ -269,7 +269,7 @@ def sim_item_tags(item1):
 
   i = 0
   for item in newlist:
-    item1['similiar_items'].append({'itemid': item['itemid'], 'value': item['value']})
+    item1['similar_items'].append({'itemid': item['itemid'], 'value': item['value']})
     item1.save()
     i += 1
     if i == 5: return
@@ -285,8 +285,8 @@ def sim_item_ingredients(item1):
   i = 0
   for item in newlist:
     # if the item was not previously added through tag similarity
-    if not filter(lambda simitem: simitem['itemid'] == item['itemid'], item1['similiar_items']):
-      item1['similiar_items'].append({'itemid': item['itemid'], 'value': item['value']})
+    if not filter(lambda simitem: simitem['itemid'] == item['itemid'], item1['similar_items']):
+      item1['similar_items'].append({'itemid': item['itemid'], 'value': item['value']})
       item1.save()
       i += 1
     if i == 5: return
@@ -404,8 +404,8 @@ def clear():
   # we clean some "columns" not entire document
   nonpcol.update({'_id': 1}, {'$pull': {'topfavorites':    {'$exists': True}}}, multi=True)
   nonpcol.update({'_id': 1}, {'$pull': {'toprated':        {'$exists': True}}}, multi=True)
-  userscol.update( {}, {'$pull': {'similiar_users':  {'$exists': True}}}, multi=True)
-  recipecol.update({}, {'$pull': {'similiar_items':  {'$exists': True}}}, multi=True)
+  userscol.update( {}, {'$pull': {'similar_users':  {'$exists': True}}}, multi=True)
+  recipecol.update({}, {'$pull': {'similar_items':  {'$exists': True}}}, multi=True)
 #endregion
 
 def recommend():
