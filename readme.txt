@@ -9,14 +9,15 @@ git pull // zobranie zo serveru
 git pull origin master
 
 todo:
-collfi do nedele 23.11:
-- collaborative filtering (pravdepodobne zpociatku user-user), na coursera
-introduction to recommender systems kde sa da preview lecture a pozret o tom videjko,
-mozes pouzit predpocitanych 5 najpodobnejsich ludi, ktore sa uz momentalne pocitaju v sim_people
-a ukladaju do monga ku kazdemu uzivatelovi
+Collfi do nedele 30.11:
+- collaborative filtering
+- sql -> mongodb, v engine.py som to uz prerobil, este treba flaskr.py a podoplnat tabulky do recommender.py
+  potom smazeme models.py a database.py
 
-cospel do nedele 23.11:
+Cospel do nedele 30.11:
+- podobnost dvoch receptov DONE
 - content based recommender: vymysliet ako vytvorit podobnost dvoch receptov, zamysliet sa nad user profilom
+- rychle tagy
 
 ideas:
 -search
