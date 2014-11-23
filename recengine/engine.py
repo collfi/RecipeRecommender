@@ -145,6 +145,7 @@ def collaborative_filtering():
 
     newlist = sorted(pred, key=itemgetter('value'), reverse=True)
     u['predicted'] = newlist[:10]
+    u.save()
 
 #Pearson Correlation Coefficient
 def pearson_sim_user(user1, user2):
