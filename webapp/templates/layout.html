@@ -43,7 +43,7 @@
                 <br>
                 <a href="{{ url_for('cookbook', login=session.user_in) }}">Your cookbook</a>
                 <br>
-                <a href="{{ url_for('recommend') }}">*Recommended</a>
+                <a href="{{ url_for('recommend', login=session.user_in) }}">Recommended</a>
 
                 <br>
                 <br>

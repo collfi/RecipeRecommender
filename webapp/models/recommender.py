@@ -20,7 +20,7 @@ class User(Document):
     'avgrating' : float,
     # these are ids of recipes which user has faved
     'favorites' : [ int],
-    # ids of recommended (from collaborative filtering) recipes sorted by expected rating
+    # ids of recommended (from collaborative filtering and content based) recipes sorted by expected rating
     'predicted': [{'itemid': int, 'value': float}],
   }
   use_dot_notation = True

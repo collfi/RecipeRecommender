@@ -4,8 +4,8 @@ from mongokit import Connection
 import sys
 import math
 # i need to add this because of imports
-#sys.path.append('/home/michal/Desktop/RECSYS/RecipeRecommender/')
-sys.path.append('/home/collfi/RecSys/RecipeRecommender/')
+sys.path.append('/home/michal/Desktop/RECSYS/RecipeRecommender/')
+#sys.path.append('/home/collfi/RecSys/RecipeRecommender/')
 from sqlalchemy import and_
 from webapp.models import recommender
 from datetime import datetime
@@ -200,24 +200,111 @@ def content_based():
       # compute user profile by ingredients with tfidf
       for ingredient in recipe['ingredients']:
         if useringredient.get(ingredient['ingredient']):
-          useringredient[ingredient['ingredient']] += G_INGREDIENTS[ingredient['ingredient']]
+          useringredient[ingredient['ingredient']] += 1#G_INGREDIENTS[ingredient['ingredient']]
         else:
-          useringredient[ingredient['ingredient']] = G_INGREDIENTS[ingredient['ingredient']]
+          useringredient[ingredient['ingredient']] = 1#G_INGREDIENTS[ingredient['ingredient']]
 
     # final two user profiles by tags and ingredients
     userprofiletag = [value/float(len(gooditems)) for value in uservectortag]
-    userprofileingredient = [{'name': key, 'value': useringredient[key]/float(len(gooditems))} for key in useringredient]
+    userprofileingredient = [{'key': key, 'value': useringredient[key]} for key in useringredient]
 
     print userprofiletag
     print userprofileingredient
 
     # 5. predicting items, cos(user,item), we can use hybrid
-#    for recipe in recipecol.Recipe.find():
-#      scoretag = compute_tag_recipe_user_sim()
-#      scoreing = compute_ing_recipe_user_sim()
-#      score = scoretag + scoreing
-#    save the best for the user
-  pass
+    sim_array = []
+    for recipe in recipecol.Recipe.find():
+      # if it is not already rated or faved
+      if recipe['_id'] not in gooditems:
+        scoretag = cossim_tag_recipe_user(userprofiletag, get_recipe_tagvector(recipe))
+        scoreing = cossim_ingred_recipe_user(userprofileingredient, recipe)
+        score = scoretag + scoreing
+        print 'score = ', scoretag, '+', scoreing, ' =', score
+        sim_array.append({'itemid':recipe['_id'], 'value':score})
+    newlist = sorted(sim_array, key=itemgetter('value'), reverse = True)
+
+    i = 0
+    for item in newlist:
+      user['predicted'].append({'itemid':item['itemid'], 'value':item['value']})
+      user.save()
+      i += 1
+      if i == 7: return
+
+#item1 is user
+#item2 is recipe
+def cossim_ingred_recipe_user(item1, item2):
+  global G_INGREDIENTS
+
+  # creating two vectors
+  finalvector = []
+  ivector1 = []
+  ivector2 = []
+
+  counting1 = 0
+
+  for ingredient in item1:
+    ivector1.append(ingredient['key'])
+    counting1 += ingredient['value']
+    if ingredient['key'] not in finalvector:
+      finalvector.append(ingredient['key'])
+
+  for ingredient in item2['ingredients']:
+    ivector2.append(ingredient['ingredient'])
+    if ingredient['ingredient'] not in finalvector:
+      finalvector.append(ingredient['ingredient'])
+
+  # compute tf-idf
+  vector1 = []
+  vector2 = []
+
+  for ingredient in finalvector:
+    if ingredient in ivector1: vector1.append((float(get_ingredient_value(item1,ingredient))/float(counting1))*G_INGREDIENTS[ingredient])
+    else: vector1.append(0.0)
+    if ingredient in ivector2: vector2.append((1.0/len(ivector2))*G_INGREDIENTS[ingredient])
+    else: vector2.append(0.0)
+
+#  print finalvector
+#  print ivector1
+#  print ivector2
+#  print vector1
+#  print vector2
+
+  # and now compute cosine similarity
+  numerator, pow1, pow2 = 0.0, 0.0, 0.0
+  for i in range(0,len(finalvector)):
+    numerator = numerator + (vector1[i] * vector2[i])
+    pow1 = pow1 + (vector1[i] * vector1[i])
+    pow2 = pow2 + (vector2[i] * vector2[i])
+
+  denumerator = math.sqrt(pow1) * math.sqrt(pow2)
+  if denumerator == 0.0:
+    return 0.0
+  else:
+    return numerator/denumerator
+
+def get_ingredient_value(item1, key):
+  for ingredient in item1:
+    if ingredient['key'] == key:
+      return ingredient['value']
+  else:
+    return 0.
+
+def cossim_tag_recipe_user(item1, item2):
+  global G_TAGS
+  if len(item1) == 0 or len(item2) == 0: return 0.0
+
+  numerator, pow1, pow2 = 0.0, 0.0, 0.0
+
+  for i in range(0, len(G_TAGS)):
+    numerator = numerator + (item1[i] * item2[i])
+    pow1 = pow1 + (item1[i] * item1[i])
+    pow2 = pow2 + (item2[i] * item2[i])
+
+  denumerator = math.sqrt(pow1) * math.sqrt(pow2)
+  if denumerator == 0.0:
+    return 0.0
+  else:
+    return numerator/denumerator
 
 def sum_vectors(vector1,vector2):
   for i in range(0,len(vector1)):
@@ -340,8 +427,6 @@ def sim_item_ingredients(item1):
 def cos_sim_recipes_ingredients(item1, item2):
   global G_INGREDIENTS
   if item1['_id'] == item2['_id']: return 0.0
-  if len(item1['tags']) == 0 or len(item2['tags']) == 0: return 0.0
-
   # creating two vectors
   finalvector = []
   ivector1 = []
@@ -442,8 +527,9 @@ def clear():
   # we clean some "columns" not entire document
   nonpcol.update({'_id': 1}, {'$pull': {'topfavorites':    {'$exists': True}}}, multi=True)
   nonpcol.update({'_id': 1}, {'$pull': {'toprated':        {'$exists': True}}}, multi=True)
-  userscol.update( {}, {'$pull': {'similar_users':  {'$exists': True}}}, multi=True)
-  recipecol.update({}, {'$pull': {'similar_items':  {'$exists': True}}}, multi=True)
+  userscol.update({}, {'$pull': {'similar_users':          {'$exists': True}}}, multi=True)
+  userscol.update({}, {'$pull': {'predicted':              {'$exists': True}}}, multi=True)
+  recipecol.update({}, {'$pull': {'similar_items':         {'$exists': True}}}, multi=True)
 #endregion
 
 def recommend():
@@ -464,9 +550,9 @@ def recommend():
   compute_idf()
   print "7. computing similar recipes/items"
   similar_items()
-  print "8. computing content based recommendations by tags"
-  content_based()
-  print "9. computing collaborative filtering"
+  print "8. computing collaborative filtering"
   collaborative_filtering()
+  print "9. computing content based recommendations by tags"
+  content_based()
 
 recommend()

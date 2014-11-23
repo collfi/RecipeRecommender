@@ -275,9 +275,16 @@ def toprated():
   entries = q.all()
   return render_template('show_entries.html', entries=entries, headline="Top rated")
 
-@app.route('/recommend', methods=['GET'])
-def recommend():
-  return render_template('show_entries.html', entries=[], headline="Recommended for you")
+@app.route('/user/<login>/recommend', methods=['GET'])
+def recommend(login):
+  user = userscol.User.find_one({'_id':login})
+  q = db_session.query(Recipe)
+  arrayisd = []
+  for reco in user['predicted']:
+    arrayisd.append(reco['itemid'])
+  q = q.filter(Recipe.id.in_(arrayisd))
+  entries = q.all()
+  return render_template('show_entries.html', entries=entries, headline="Recommended for you")
 
 @app.route('/interesting', methods=['GET'])
 def interesting():
@@ -328,6 +335,7 @@ def rate():
 
 #endregion
 #endregion
+
 
 def init_route():
   # sqlalchemy
