@@ -12,9 +12,9 @@ class User(Document):
   structure = {
     #_id is login, every object in mongodb has _id attribute
     #'_id' : str,
-    'fullname' : str,
-    'email' : str,
-    'password' : str, # in future we will encrypt the pass
+    'fullname' : unicode,
+    'email' : unicode,
+    'password' : unicode, # in future we will encrypt the pass
     # value is rating, itemid is id of item
     'ratings' : [{'itemid' : int, 'value' : float, 'date_creation' : datetime}],
     # value is similarity
@@ -55,9 +55,9 @@ class User(Document):
 class Recipe(Document):
   structure = {
     # _id is id of recipe
-    'userid' : str,
-    'title' : str,
-    'text' : str,
+    'userid' : unicode,
+    'title' : unicode,
+    'text' : unicode,
     #image = Column(Binary(9000), unique=False)
     'date_creation' : datetime,
     # ids of users which faved this recipe
@@ -154,9 +154,9 @@ def init_mongodbnew(mconnection):
 
   recipe = recipecol.Recipe()
   recipe['_id'] = 1
-  recipe['userid'] = 'admin'
-  recipe['title'] = 'Mixed eggs'
-  recipe['text'] = """I wish you'd have given me this written question ahead of time so I
+  recipe['userid'] = u'admin'
+  recipe['title'] = u'Mixed eggs'
+  recipe['text'] = u"""I wish you'd have given me this written question ahead of time so I
     could plan for it... I'm sure something will pop into my head here in
     the midst of this press conference, with all the pressure of trying to
     come up with answer, but it hadn't yet... I don't want to sound like
@@ -177,9 +177,9 @@ def init_mongodbnew(mconnection):
 
   recipe2 = recipecol.Recipe()
   recipe2['_id'] = 2
-  recipe2['userid'] = 'admin'
-  recipe2['title'] = 'Honey rice'
-  recipe2['text'] = """I wish you'd have given me this written question ahead of time so I
+  recipe2['userid'] = u'admin'
+  recipe2['title'] = u'Honey rice'
+  recipe2['text'] = u"""I wish you'd have given me this written question ahead of time so I
     could plan for it... I'm sure something will pop into my head here in
     the midst of this press conference, with all the pressure of trying to
     come up with answer, but it hadn't yet... I don't want to sound like
@@ -201,9 +201,9 @@ def init_mongodbnew(mconnection):
 
   recipe3 = recipecol.Recipe()
   recipe3['_id'] = 3
-  recipe3['userid'] = 'collfi'
-  recipe3['title'] = 'Roasted beef with rice'
-  recipe3['text'] = """I wish you'd have given me this written question ahead of time so I
+  recipe3['userid'] = u'collfi'
+  recipe3['title'] = u'Roasted beef with rice'
+  recipe3['text'] = u"""I wish you'd have given me this written question ahead of time so I
     could plan for it... I'm sure something will pop into my head here in
     the midst of this press conference, with all the pressure of trying to
     come up with answer, but it hadn't yet... I don't want to sound like
@@ -226,23 +226,23 @@ def init_mongodbnew(mconnection):
 
   user = userscol.User()
   user['_id'] = 'admin'
-  user['fullname'] = 'admin'
-  user['email'] = 'cospelthetraceur@gmail.com'
-  user['password'] = 'admin'
+  user['fullname'] = u'admin'
+  user['email'] = u'cospelthetraceur@gmail.com'
+  user['password'] = u'admin'
   user.save()
 
   user2 = userscol.User()
   user2['_id'] = 'collfi'
-  user2['fullname'] = 'collfi'
-  user2['email'] = 'collfijepan@gmail.com'
-  user2['password'] = 'collfi'
+  user2['fullname'] = u'collfi'
+  user2['email'] = u'collfijepan@gmail.com'
+  user2['password'] = u'collfi'
   user2.save()
 
   user3 = userscol.User()
   user3['_id'] = 'cospel'
-  user3['fullname'] = 'admin'
-  user3['email'] = 'cospelthetraceur@gmail.com'
-  user3['password'] = 'admin'
+  user3['fullname'] = u'admin'
+  user3['email'] = u'cospelthetraceur@gmail.com'
+  user3['password'] = u'admin'
   user3.save()
 
 

@@ -209,7 +209,7 @@ def show_entry(id):
 
   # has user already faved the item?
   user = userscol.User.find_one({'_id': session['user_in'], 'favorites': int(id)})
-  rated  = userscol.find_one({'_id': session['user_in'], 'ratings.itemid': int(id)}, {'ratings.itemid': 1,
+  rated  = userscol.User.find_one({'_id': session['user_in'], 'ratings.itemid': int(id)}, {'ratings.itemid': 1,
                                                                            'ratings.value': 1, '_id': 0})
   value = 0
   if rated:
