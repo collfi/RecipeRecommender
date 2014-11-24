@@ -28,15 +28,15 @@
         <p>Your personal book with recipes</p>
            <div class="metanav">
                 {% if not session.logged_in %}
-                <a href="{{ url_for('signup') }}">sign up</a>
+                <a href="{{ url_for('signup') }}">Sign up</a>
                 <br>
-                <a href="{{ url_for('login') }}">log in</a>
+                <a href="{{ url_for('login') }}">Log in</a>
                 {% else %}
                 <a id="searchb" href="#">Search</a>
                 <br>
-                <a href="{{ url_for('logout') }}">log out</a>
+                <a href="{{ url_for('logout') }}">Log out</a>
                 <br>
-                <a href="{{ url_for('show_profile', login=session.user_in) }}">user profile</a>
+                <a href="{{ url_for('show_profile', login=session.user_in) }}">User profile</a>
                 <br>
                 <a href="{{ url_for('add') }}">Add</a>
                 <br>
@@ -57,9 +57,8 @@
                 <br>
                 <br>
                 <p style="color:#E82C59">
-                #celiac #diabetic #ketogenic #lactose-free
-                    #vegetarian #vegan #paleo
-
+                <a style="color:#E82C59" href="{{ url_for('show_recipes_tag', tag='celiac') }}">#celiac</a> <a style="color:#E82C59" href="{{ url_for('show_recipes_tag', tag='diabetic') }}">#diabetic</a> <a style="color:#E82C59" href="{{ url_for('show_recipes_tag', tag='ketogenic') }}">#ketogenic</a> <a style="color:#E82C59" href="{{ url_for('show_recipes_tag', tag='lactose-free') }}">#lactose-free</a>
+                    <a style="color:#E82C59" href="{{ url_for('show_recipes_tag', tag='vegetarian') }}">#vegetarian</a> <a style="color:#E82C59" href="{{ url_for('show_recipes_tag', tag='vegan') }}">#vegan</a> <a style="color:#E82C59" href="{{ url_for('show_recipes_tag', tag='paleo') }}">#paleo</a>
                     </p>
                 {% endif %}
             </div>

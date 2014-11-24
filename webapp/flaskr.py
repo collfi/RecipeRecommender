@@ -61,7 +61,8 @@ def show_profile(login):
 def login():
   error = None
   if request.method == 'POST':
-    user = userscol.User.find_one({'_id': request.form['login'], 'passowrd':request.form['password']})
+    user = userscol.User.find_one({'_id': request.form['login'], 'password':request.form['password']})
+    print user
     if user:
       session['logged_in'] = True
       session['user_in'] = request.form['login']
@@ -241,30 +242,40 @@ def show_entry(id):
 @app.route('/recommend/topfav', methods=['GET'])
 def topfav():
   recipe = nonpcol.NonPersonal.find_one({'_id':1})
-  entries = recipecol.Recipe.find_one({'_id': {'$in': recipe['topfavorites']}})
+  entries = recipecol.Recipe.find({'_id': {'$in': recipe['topfavorites']}})
   if entries == None: entries = []
   return render_template('show_entries.html', entries=entries, headline="Top favorites")
 
 @app.route('/recommend/toprated', methods=['GET'])
 def toprated():
   recipe = nonpcol.NonPersonal.find_one({'_id':1})
-  entries = recipecol.Recipe.find_one({'_id': {'$in': recipe['toprated']}})
+  entries = recipecol.Recipe.find({'_id': {'$in': recipe['toprated']}})
+  print entries
   if entries == None: entries = []
   return render_template('show_entries.html', entries=entries, headline="Top rated")
 
 @app.route('/user/<login>/recommend', methods=['GET'])
 def recommend(login):
   user = userscol.User.find_one({'_id':login})
-  entries = recipecol.Recipe.find_one({'_id': {'$in': user['predicted']}})
+  values = [predict['itemid'] for predict in user['predicted']]
+  entries = recipecol.Recipe.find({'_id': {'$in': values}})
   if entries == None: entries = []
   return render_template('show_entries.html', entries=entries, headline="Recommended for you")
 
 @app.route('/interesting', methods=['GET'])
 def interesting():
   recipe = nonpcol.NonPersonal.find_one({'_id': 1})
-  entries = recipecol.Recipe.find_one({'_id': {'$in': recipe['topinteresting']}})
+  entries = recipecol.Recipe.find({'_id': {'$in': recipe['topinteresting']}})
   if entries == None: entries = []
   return render_template('show_entries.html', entries=entries, headline="Interesting")
+#endregion
+
+#region recipes-tags
+@app.route('/recipes/<tag>', methods=['GET'])
+def show_recipes_tag(tag=None, headline="Recipes"):
+  entries=recipecol.Recipe.find({'tags':{'$in':[tag]}})
+  return render_template('show_entries.html', entries=entries, headline="Recipes")
+
 #endregion
 #endregion
 
