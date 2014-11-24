@@ -1,23 +1,23 @@
 {% extends "layout.html" %}
 {% block body %}
  <div id="title">
-     <h2 class="leftclass"><a href="{{ url_for('show_entry', id=entry.id) }}" >{{ entry.title }}</a></h2>
+     <h2 class="leftclass"><a href="{{ url_for('show_entry', id=rec._id) }}" >{{ rec.title }}</a></h2>
      <h3 class="rightclass">{{ rec.avgrating }}/5</h3>
  </div>
         <br/>
         <br/>
         <br/>
 <div>
- by <a href="{{ url_for('show_profile', login=entry.userid) }}">{{ entry.userid }}</a><br>
+ by <a href="{{ url_for('show_profile', login=rec.userid) }}">{{ rec.userid }}</a><br>
      {% if canedit %}
- <a href="{{ url_for('edit', id=entry.id) }}">Edit</a>
+ <a href="{{ url_for('edit', id=rec._id) }}">Edit</a>
  {% endif %}
 
  <a href="{{ url_for('show_entries') }}">Back</a><br>
- <br><blockquote>{{ entry.text|safe }}</blockquote><br>
- {% if entry.image %}
+ <br><blockquote>{{ rec.text|safe }}</blockquote><br>
+ <!--{% if rec.image %}
  <a href="{{ url_for('image', id=entry.id) }}"><img src="data:image/png;base64,{{ entry.image }}"/></a>
- {% endif %}
+ {% endif %}-->
  <h3>Ingredients</h3>
  <table class="colors">
 
@@ -53,7 +53,7 @@ $(document).ready(function(){
         $.ajax({
             url: "{{ url_for('rate') }}",
             type: 'POST',
-            data: JSON.stringify({'rating':score,'userid':'{{ session.user_in }}','itemid':{{ entry.id }} }),
+            data: JSON.stringify({'rating':score,'userid':'{{ session.user_in }}','itemid':{{ rec._id }} }),
             contentType: 'application/json;charset=UTF-8',
             success: function(response) {
                 console.log(response);
@@ -69,7 +69,7 @@ $(document).ready(function(){
         $.ajax({
             url: "{{ url_for('favorite') }}",
             type: 'POST',
-            data: JSON.stringify({'favorite': $( "#favorite" ).attr( "favorited" ),'userid':'{{ session.user_in }}','itemid':{{ entry.id }} }),
+            data: JSON.stringify({'favorite': $( "#favorite" ).attr( "favorited" ),'userid':'{{ session.user_in }}','itemid':{{ rec._id }} }),
             contentType: 'application/json;charset=UTF-8',
             success: function(response) {
                 if(response == "ERR") {

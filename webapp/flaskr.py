@@ -10,11 +10,6 @@ import base64
 import json
 
 #region database
-# this is our sqlalchemy orm which works with our
-# simple sqlite database to store basic data
-from models.database import db_session, init_db
-from models.models import User, Recipe
-
 # constants
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
@@ -44,10 +39,6 @@ def allowed_file(filename):
 #endregion
 
 # region requests
-@app.teardown_appcontext
-def shutdown_session(exception=None):
-    db_session.remove()
-
 @app.before_request
 def before_request():
   if 'logged_in' not in session and (request.endpoint != 'login' and request.endpoint != 'signup'):
@@ -58,19 +49,19 @@ def before_request():
 @app.route('/', methods=['GET'])
 def show_entries(entries=None, headline="Recipes"):
   if entries == None:
-    entries=Recipe.query.all()
+    entries=recipecol.Recipe.find()
   return render_template('show_entries.html', entries=entries, headline="Recipes")
 
 #region user
 @app.route('/user/<login>', methods=['GET', 'POST'])
 def show_profile(login):
-  return render_template('show_profile.html', user=db_session.query(User).get(login))
+  return render_template('show_profile.html', user=userscol.User.find_one({'_id': login}))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
   error = None
   if request.method == 'POST':
-    user = User.query.filter(and_(User.login == request.form['login'], User.password == request.form['password'])).first()
+    user = userscol.User.find_one({'_id': request.form['login'], 'passowrd':request.form['password']})
     if user:
       session['logged_in'] = True
       session['user_in'] = request.form['login']
@@ -92,13 +83,12 @@ def signup():
   error = None
   if request.method == 'POST':
     try:
-      # save to sqldb
-      user = User(request.form['login'], request.form['fullname'], request.form['email'], request.form['password'])
-      db_session.add(user)
-      db_session.commit()
-      # and save document to mongodb
+      # save document to mongodb
       user = userscol.User()
       user['_id'] = request.form['login']
+      user['fullname'] = request.form['fullname']
+      user['email'] = request.form['email']
+      user['password'] = request.form['password']
       user.save()
       return redirect(url_for('login'))
     except Exception, e:
@@ -109,18 +99,14 @@ def signup():
 @app.route('/user/<login>/cookbook', methods=['GET'])
 def cookbook(login):
   user = userscol.User.find_one({'_id':login})
-  favorites = user['favorites']
-  recipes = Recipe.query.filter(or_(Recipe.userid == login, Recipe.id.in_(favorites))).all()
+  recipes = recipecol.Recipe.find({'$or': [{'userid': login}, {'_id':{'$in':user['favorites']}}]})
   return render_template('show_entries.html', entries=recipes, headline="Your cookbook")
 
 @app.route('/user/<login>/favorites', methods=['GET'])
 def user_favorites(login):
   user = userscol.User.find_one({'_id': login})
-  favorites = user['favorites']
-  q = db_session.query(Recipe)
-  q = q.filter(Recipe.id.in_(favorites))
-  entries = q.all()
-  return render_template('show_profile.html', entries=entries)
+  recipes = recipecol.Recipe.find({'id': {'$in': user['favorites']}})
+  return render_template('show_profile.html', entries=recipes)
 
 #endregion
 
@@ -131,9 +117,7 @@ def add():
 
 @app.route('/recipe/<id>/edit', methods=['GET'])
 def edit(id):
-  q = db_session.query(Recipe)
-  q = q.filter(Recipe.id == id)
-  entry = q.one()
+  entry = recipecol.Recipe.find_one({'_id': id})
   rec = recipecol.Recipe.find_one({'_id': int(id)})
   max = len(rec.get('ingredients'))
 
@@ -143,19 +127,21 @@ def edit(id):
 
 @app.route('/recipe/add_entry', methods=['POST'])
 def add_entry():
-  # check the file
-  file = request.files['file']
+  # check the image file
+  #file = request.files['file']
+
   # store the recipe
   tags = request.form['tags'].split(',')
-  recipe = Recipe(None, session['user_in'], request.form['title'], request.form['text'], base64.b64encode(file.read()))
-  db_session.add(recipe)
-  db_session.commit()
 
   # create in mongo
   recipemongo = recipecol.Recipe()
-  recipemongo['_id'] = recipe.id
+  #recipemongo['_id'] = recipe.id
+  recipemongo['userid'] = session['user_in']
+  recipemongo['title'] = request.form['title']
+  recipemongo['text'] = request.form['text']
   recipemongo['tags'] = tags
   recipemongo.save()
+
   # get ingredients
   count = 0
   nextIng = True
@@ -172,28 +158,23 @@ def add_entry():
   while nextIng:
     if 'ingredient_' + str(count) in request.form:
       name = request.form['ingredient_' + str(count)]
-      amount =request.form['amount_' + str(count)]
+      amount = request.form['amount_' + str(count)]
       count += 1
       recipemongo['ingredients'].append({'ingredient': name, 'number': amount})
-
     else:
       print ("no more ingredients")
       nextIng = False
+
   recipemongo.save()
   flash('New entry was successfully posted')
   return redirect(url_for('show_entries', headline="Recipes"))
 
 @app.route('/recipe/edit_entry', methods=['POST'])
 def edit_entry():
-  q = db_session.query(Recipe)
-  q = q.filter(Recipe.id == request.form['id'])
-  recipe = q.one()
-  recipe.title = request.form['title']
-  recipe.text = request.form['text']
-  db_session.commit()
-  #---------------------------------
-  recipemongo = recipecol.Recipe.find_one({'_id': int(recipe.id)})
+  recipemongo = recipecol.Recipe.find_one({'_id': int(request.form['id'])})
   recipemongo['tags'] = request.form['tags'].split(',')
+  recipemongo['title'] = request.form['title']
+  recipemongo['text'] = request.form['text']
   recipemongo['ingredients'] = []
   recipemongo.save()
   # get ingredients
@@ -213,13 +194,13 @@ def edit_entry():
 
 @app.route("/recipe/<id>.png")
 def image(id):
-  q = db_session.query(Recipe)
-  q = q.filter(Recipe.id == id)
-  recipe = q.one()
-  response = make_response(recipe.image)
-  response.headers['Content-Type'] = 'image/jpeg'
-  response.headers['Content-Disposition'] = 'attachment; filename=img.jpg'
-  return response
+#  q = db_session.query(Recipe)
+#  q = q.filter(Recipe.id == id)
+#  recipe = q.one()
+#  response = make_response(recipe.image)
+#  response.headers['Content-Type'] = 'image/jpeg'
+#  response.headers['Content-Disposition'] = 'attachment; filename=img.jpg'
+  return None#response
 
 @app.route('/recipe/<id>', methods=['GET', 'POST'])
 def show_entry(id):
@@ -236,8 +217,6 @@ def show_entry(id):
       if item.get('itemid') == int(id):
         value = item.get('value')
 
-  entry = db_session.query(Recipe).get(id)
-
   # get tags
   rec = recipecol.Recipe.find_one({'_id': int(id)})
   tags = ','.join(rec['tags'])
@@ -246,52 +225,45 @@ def show_entry(id):
   simrecipes_ids = rec['similar_items']
   simrecipes = []
   for recipe_id in simrecipes_ids:
-    simrecipes.append(db_session.query(Recipe).get(recipe_id['itemid']))
+    simrecipes.append(recipecol.Recipe.find_one({'_id':recipe_id['itemid']}))
 
   print simrecipes_ids
 
   # if is users logged in recipe then he can edit it
   if user:
     favorited = True
-  if entry.userid == session['user_in']:
+  if rec['userid'] == session['user_in']:
     canedit = True
-  return render_template('show_entry.html', entry=entry, canedit=canedit, favorited=favorited, value=value, rec=rec, tags=tags, simrecipes=simrecipes)
+  return render_template('show_entry.html', canedit=canedit, favorited=favorited, value=value, rec=rec, tags=tags, simrecipes=simrecipes)
 #endregion
 
 #region recommendations
 @app.route('/recommend/topfav', methods=['GET'])
 def topfav():
   recipe = nonpcol.NonPersonal.find_one({'_id':1})
-  q = db_session.query(Recipe)
-  q = q.filter(Recipe.id.in_(recipe['topfavorites']))
-  entries = q.all()
+  entries = recipecol.Recipe.find_one({'_id': {'$in': recipe['topfavorites']}})
+  if entries == None: entries = []
   return render_template('show_entries.html', entries=entries, headline="Top favorites")
 
 @app.route('/recommend/toprated', methods=['GET'])
 def toprated():
   recipe = nonpcol.NonPersonal.find_one({'_id':1})
-  q = db_session.query(Recipe)
-  q = q.filter(Recipe.id.in_(recipe['toprated']))
-  entries = q.all()
+  entries = recipecol.Recipe.find_one({'_id': {'$in': recipe['toprated']}})
+  if entries == None: entries = []
   return render_template('show_entries.html', entries=entries, headline="Top rated")
 
 @app.route('/user/<login>/recommend', methods=['GET'])
 def recommend(login):
   user = userscol.User.find_one({'_id':login})
-  q = db_session.query(Recipe)
-  arrayisd = []
-  for reco in user['predicted']:
-    arrayisd.append(reco['itemid'])
-  q = q.filter(Recipe.id.in_(arrayisd))
-  entries = q.all()
+  entries = recipecol.Recipe.find_one({'_id': {'$in': user['predicted']}})
+  if entries == None: entries = []
   return render_template('show_entries.html', entries=entries, headline="Recommended for you")
 
 @app.route('/interesting', methods=['GET'])
 def interesting():
-  recipe = nonpcol.NonPersonal.find_one({'_id':1})
-  q = db_session.query(Recipe)
-  q = q.filter(Recipe.id.in_(recipe['topinteresting']))
-  entries = q.all()
+  recipe = nonpcol.NonPersonal.find_one({'_id': 1})
+  entries = recipecol.Recipe.find_one({'_id': {'$in': recipe['topinteresting']}})
+  if entries == None: entries = []
   return render_template('show_entries.html', entries=entries, headline="Interesting")
 #endregion
 #endregion
@@ -338,8 +310,6 @@ def rate():
 
 
 def init_route():
-  # sqlalchemy
-  init_db()
   # mongo
   init_mongodb()
 

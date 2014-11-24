@@ -12,6 +12,9 @@ class User(Document):
   structure = {
     #_id is login, every object in mongodb has _id attribute
     #'_id' : str,
+    'fullname' : str,
+    'email' : str,
+    'password' : str, # in future we will encrypt the pass
     # value is rating, itemid is id of item
     'ratings' : [{'itemid' : int, 'value' : float, 'date_creation' : datetime}],
     # value is similarity
@@ -24,8 +27,6 @@ class User(Document):
     'predicted': [{'itemid': int, 'value': float}],
   }
   use_dot_notation = True
-  #required_fields = ['_id']
-  #default_values = {...}
 
   # returns none if user dont rate item with
   # itemid, else it returns value of his rating
@@ -54,7 +55,10 @@ class User(Document):
 class Recipe(Document):
   structure = {
     # _id is id of recipe
-    #favorites is list of user ids
+    'userid' : str,
+    'title' : str,
+    'text' : str,
+    #image = Column(Binary(9000), unique=False)
     'date_creation' : datetime,
     # ids of users which faved this recipe
     'favorites' : [ unicode ],
@@ -150,6 +154,15 @@ def init_mongodbnew(mconnection):
 
   recipe = recipecol.Recipe()
   recipe['_id'] = 1
+  recipe['userid'] = 'admin'
+  recipe['title'] = 'Mixed eggs'
+  recipe['text'] = """I wish you'd have given me this written question ahead of time so I
+    could plan for it... I'm sure something will pop into my head here in
+    the midst of this press conference, with all the pressure of trying to
+    come up with answer, but it hadn't yet... I don't want to sound like
+    I have made no mistakes. I'm confident I have. I just haven't - you
+    just put me under the spot here, and maybe I'm not as quick on my feet
+    as I should be in coming up with one."""
   recipe['ingredients'].append({'ingredient': u'eggs', 'number': u'5'})
   recipe['ingredients'].append({'ingredient': u'salt', 'number': u'3g'})
   recipe['ingredients'].append({'ingredient': u'sunflower oil', 'number': u'10 ml'})
@@ -164,6 +177,15 @@ def init_mongodbnew(mconnection):
 
   recipe2 = recipecol.Recipe()
   recipe2['_id'] = 2
+  recipe2['userid'] = 'admin'
+  recipe2['title'] = 'Honey rice'
+  recipe2['text'] = """I wish you'd have given me this written question ahead of time so I
+    could plan for it... I'm sure something will pop into my head here in
+    the midst of this press conference, with all the pressure of trying to
+    come up with answer, but it hadn't yet... I don't want to sound like
+    I have made no mistakes. I'm confident I have. I just haven't - you
+    just put me under the spot here, and maybe I'm not as quick on my feet
+    as I should be in coming up with one."""
   recipe2['ingredients'].append({'ingredient': u'honey', 'number': u'20g'})
   recipe2['ingredients'].append({'ingredient': u'rice', 'number': u'100g'})
   recipe2['ingredients'].append({'ingredient': u'salt', 'number': u'3g'})
@@ -179,6 +201,15 @@ def init_mongodbnew(mconnection):
 
   recipe3 = recipecol.Recipe()
   recipe3['_id'] = 3
+  recipe3['userid'] = 'collfi'
+  recipe3['title'] = 'Roasted beef with rice'
+  recipe3['text'] = """I wish you'd have given me this written question ahead of time so I
+    could plan for it... I'm sure something will pop into my head here in
+    the midst of this press conference, with all the pressure of trying to
+    come up with answer, but it hadn't yet... I don't want to sound like
+    I have made no mistakes. I'm confident I have. I just haven't - you
+    just put me under the spot here, and maybe I'm not as quick on my feet
+    as I should be in coming up with one."""
   recipe3['ingredients'].append({'ingredient': u'beef', 'number': u'200 g'})
   recipe3['ingredients'].append({'ingredient': u'rice', 'number': u'300 g'})
   recipe3['ingredients'].append({'ingredient': u'salt', 'number': u'3g'})
@@ -195,14 +226,23 @@ def init_mongodbnew(mconnection):
 
   user = userscol.User()
   user['_id'] = 'admin'
+  user['fullname'] = 'admin'
+  user['email'] = 'cospelthetraceur@gmail.com'
+  user['password'] = 'admin'
   user.save()
 
   user2 = userscol.User()
   user2['_id'] = 'collfi'
+  user2['fullname'] = 'collfi'
+  user2['email'] = 'collfijepan@gmail.com'
+  user2['password'] = 'collfi'
   user2.save()
 
   user3 = userscol.User()
   user3['_id'] = 'cospel'
+  user3['fullname'] = 'admin'
+  user3['email'] = 'cospelthetraceur@gmail.com'
+  user3['password'] = 'admin'
   user3.save()
 
 
