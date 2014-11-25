@@ -203,6 +203,12 @@ def image(id):
 #  response.headers['Content-Disposition'] = 'attachment; filename=img.jpg'
   return None#response
 
+
+@app.route('/search/<text>', methods=['GET'])
+def search(text=None):
+  entries=recipecol.Recipe.find({'title': {'$regex': text}})
+  return render_template('show_entries.html', entries=entries, headline="Recipes like " + text)
+
 @app.route('/recipe/<id>', methods=['GET', 'POST'])
 def show_entry(id):
   canedit = None
@@ -274,7 +280,7 @@ def interesting():
 @app.route('/recipes/<tag>', methods=['GET'])
 def show_recipes_tag(tag=None, headline="Recipes"):
   entries=recipecol.Recipe.find({'tags':{'$in':[tag]}})
-  return render_template('show_entries.html', entries=entries, headline="Recipes")
+  return render_template('show_entries.html', entries=entries, headline="Recipes in " + tag)
 
 #endregion
 #endregion

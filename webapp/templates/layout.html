@@ -15,6 +15,19 @@
 <script src="{{ url_for('static',filename='tag-it.js') }}" type="text/javascript" charset="utf-8"></script>
 <script type=text/javascript>
   $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+  $(document).ready(function(){
+
+$( "#searchb" ).click(function() {
+  $( "#search" ).toggle();
+    $( "#searchbr" ).toggle();
+});
+
+$( "#searchbtn" ).click(function() {
+
+window.location.replace("/search/" + $("#searchin").val());
+
+});
+});
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 <!--[if lt IE 9]>
@@ -69,7 +82,10 @@
       </header>
       <section>
           <div class="page">
-             <div style="display: none" id="search">something like lunchtime</div>
+             <div style="display: none" id="search">
+                 <input type="text" id="searchin" name="search" placeholder="recipe name">>
+                 <input type="submit" id="searchbtn" value="search">
+             </div>
              <br style="display: none" id="searchbr">
              {% block body %}{% endblock %}
           </div>

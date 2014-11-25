@@ -158,12 +158,6 @@ header ul a {
   height:34px;
 }
 
-#search {
-  background: white;
-  border: 1px solid #e5e5e5;
-  height: 150px;
-  /*border-radius: 15px;*/
-}
 
 header ul a:hover {
   color:#999;
