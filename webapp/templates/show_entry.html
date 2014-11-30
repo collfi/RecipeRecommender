@@ -15,6 +15,9 @@
 
  <a href="{{ url_for('show_entries') }}">Back</a><br>
  <br><blockquote>{{ rec.text|safe }}</blockquote><br>
+    <i>Serves: {{ rec.serves }} person</i>
+    <br>
+    <br>
  <!--{% if rec.image %}
  <a href="{{ url_for('image', id=entry.id) }}"><img src="data:image/png;base64,{{ entry.image }}"/></a>
  {% endif %}-->

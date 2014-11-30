@@ -4,8 +4,8 @@ from mongokit import Connection
 import sys
 import math
 # i need to add this because of imports
-#sys.path.append('/home/michal/Desktop/RECSYS/RecipeRecommender/')
-sys.path.append('/home/collfi/RecSys/RecipeRecommender/')
+sys.path.append('/home/michal/Desktop/RECSYS/RecipeRecommender/')
+#sys.path.append('/home/collfi/RecSys/RecipeRecommender/')
 from sqlalchemy import and_
 from webapp.models import recommender
 from datetime import datetime
@@ -406,7 +406,7 @@ def sim_item_tags(item1):
     item1['similar_items'].append({'itemid': item['itemid'], 'value': item['value']})
     item1.save()
     i += 1
-    if i == 5: return
+    if i == 2: return
 
 # compute similiar items for item through the tf-idf with ingredients
 def sim_item_ingredients(item1):
@@ -423,7 +423,7 @@ def sim_item_ingredients(item1):
       item1['similar_items'].append({'itemid': item['itemid'], 'value': item['value']})
       item1.save()
       i += 1
-    if i == 5: return
+    if i == 2: return
 
 # cos sim between two recipes based on ingredients
 # the vector space model is based on tf-idf
