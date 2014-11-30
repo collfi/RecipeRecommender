@@ -3,4 +3,22 @@
  <h1>Show profile</h1>
  <a href="{{ url_for('show_entries') }}">Back</a>
  <h4>{{ user._id }}</h4> {{ user.fullname }}<br> {{ user.email }}
+    <br/>
+    <br/>
+    <br/>
+ <div id="sim_recipes">
+ <i><h3>People with similar taste</h3></i>
+ <table class="colors">
+    <tbody>
+    <tr>
+        <th>Name</th>
+    </tr>
+    {% for user in simpeople %}
+    <tr>
+        <td><a href="{{ url_for('cookbook', login=user._id) }}">{{ user._id }}</a></td>
+    </tr>
+    {% endfor %}
+    </tbody>
+ </table>
+ </div>
 {% endblock %}

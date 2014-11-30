@@ -113,7 +113,7 @@ $(document).ready(function(){
     </tr>
     {% for recipe in simrecipes %}
     <tr>
-        <td><a href="{{ url_for('show_entry', id=recipe.id) }}">{{ recipe.title }}</a></td>
+        <td><a href="{{ url_for('show_entry', id=recipe._id) }}">{{ recipe.title }}</a></td>
     </tr>
     {% endfor %}
     </tbody>

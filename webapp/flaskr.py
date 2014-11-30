@@ -55,7 +55,15 @@ def show_entries(entries=None, headline="Recipes"):
 #region user
 @app.route('/user/<login>', methods=['GET', 'POST'])
 def show_profile(login):
-  return render_template('show_profile.html', user=userscol.User.find_one({'_id': login}))
+  user = userscol.User.find_one({'_id': login})
+  simpeople_ids = user['similar_users']
+  simpeople = []
+  print login + '!!!!!!!!!!!!!!!!!!'
+  print simpeople_ids
+  for user_id in simpeople_ids:
+    if user_id['value'] > 0.7: #TODO pick the most similar only! + delete print
+      simpeople.append(userscol.User.find_one({'_id': user_id['userid']}))
+  return render_template('show_profile.html', user=userscol.User.find_one({'_id': login}), simpeople=simpeople)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -101,7 +109,8 @@ def signup():
 def cookbook(login):
   user = userscol.User.find_one({'_id':login})
   recipes = recipecol.Recipe.find({'$or': [{'userid': login}, {'_id':{'$in':user['favorites']}}]})
-  return render_template('show_entries.html', entries=recipes, headline="Your cookbook")
+  headline = login + '\'s Cookbook'
+  return render_template('show_entries.html', entries=recipes, headline=headline)
 
 @app.route('/user/<login>/favorites', methods=['GET'])
 def user_favorites(login):

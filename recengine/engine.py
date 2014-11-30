@@ -4,8 +4,8 @@ from mongokit import Connection
 import sys
 import math
 # i need to add this because of imports
-sys.path.append('/home/michal/Desktop/RECSYS/RecipeRecommender/')
-#sys.path.append('/home/collfi/RecSys/RecipeRecommender/')
+#sys.path.append('/home/michal/Desktop/RECSYS/RecipeRecommender/')
+sys.path.append('/home/collfi/RecSys/RecipeRecommender/')
 from sqlalchemy import and_
 from webapp.models import recommender
 from datetime import datetime
@@ -139,9 +139,11 @@ def collaborative_filtering():
           denominator += pearson_sim_user(u, user_b)
 
         if denominator == 0: continue
-
-        predicted_rating = u['avgrating'] + (numerator / denominator)
-        pred.append({'itemid': r['_id'], 'value': predicted_rating})
+          #predicted_rating = u['avgrating']
+          #pred.append({'itemid': r['_id'], 'value': predicted_rating})
+        else:
+          predicted_rating = u['avgrating'] + (numerator / denominator)
+          pred.append({'itemid': r['_id'], 'value': predicted_rating})
 
     newlist = sorted(pred, key=itemgetter('value'), reverse=True)
     u['predicted'] = newlist[:10]
@@ -165,9 +167,9 @@ def pearson_sim_user(user1, user2):
   #average ratings for users
   avg1 = user1['avgrating']
   avg2 = user2['avgrating']
-  den1 = 0
-  den2 = 0
-  sum1 = 0
+  den1 = 0.0
+  den2 = 0.0
+  sum1 = 0.0
   for item in mratings:
     sum1 += ((item['value1'] - avg1) * (item['value2'] - avg2))
     den1 += (item['value1'] - avg1) ** 2
@@ -192,7 +194,7 @@ def content_based():
     useringredient = {}
     for recipeid in gooditems:
       # get the recipe
-      recipe = recipecol.Recipe.find_one({'_id':recipeid})
+      recipe = recipecol.Recipe.find_one({'_id': recipeid})
 
       # compute user profile by tags
       vectortag = get_recipe_tagvector(recipe)
@@ -336,12 +338,12 @@ def sim_person(user1):
   sim_array = []
   for user2 in userscol.User.find():
     if user1['_id'] == user2['_id']: continue
-    sim_array.append({'userid':user2['_id'], 'value':cos_sim_user(user1,user2)})
-  newlist = sorted(sim_array, key=itemgetter('value'), reverse = True)
+    sim_array.append({'userid':user2['_id'], 'value': cos_sim_user(user1, user2)})
+  newlist = sorted(sim_array, key=itemgetter('value'), reverse=True)
 
   i = 0
   for item in newlist:
-    user1['similar_users'].append({'userid':item['userid'],'value':item['value']})
+    user1['similar_users'].append({'userid': item['userid'], 'value': item['value']})
     user1.save()
     i += 1
     if i == 7: return
