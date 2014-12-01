@@ -8,6 +8,7 @@ from models import recommender
 from datetime import datetime
 import base64
 import json
+import re
 
 #region database
 # constants
@@ -215,7 +216,7 @@ def image(id):
 
 @app.route('/search/<text>', methods=['GET'])
 def search(text=None):
-  entries=recipecol.Recipe.find({'title': {'$regex': text}})
+  entries=recipecol.Recipe.find({'title': {'$regex': re.compile(text, re.IGNORECASE)}})
   return render_template('show_entries.html', entries=entries, headline="Recipes like " + text)
 
 @app.route('/recipe/<id>', methods=['GET', 'POST'])
