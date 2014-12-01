@@ -286,11 +286,14 @@ def interesting():
 #endregion
 
 #region recipes-tags
-@app.route('/recipes/<tag>', methods=['GET'])
-def show_recipes_tag(tag=None, headline="Recipes"):
-  entries=recipecol.Recipe.find({'tags':{'$in':[tag]}})
-  return render_template('show_entries.html', entries=entries, headline="Recipes in " + tag)
-
+@app.route('/recipes/<type>/<value>', methods=['GET'])
+def show_recipes_adv(type=None,value=None, headline="Recipes"):
+  if type == 'tags': # tags
+    entries=recipecol.Recipe.find({'tags':{'$in':[value]}})
+    return render_template('show_entries.html', entries=entries, headline="Recipes in " + value)
+  else:         # ingredients
+    entries=recipecol.Recipe.find({'ingredients.ingredient':{'$in':[value]}})
+    return render_template('show_entries.html', entries=entries, headline="Recipes in " + value)
 #endregion
 #endregion
 

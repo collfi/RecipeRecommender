@@ -70,9 +70,9 @@ window.location.replace("/search/" + $("#searchin").val());
                 <br>
                 <br>
                 <p style="color:#E82C59">
-                <a style="color:#E82C59" href="{{ url_for('show_recipes_tag', tag='celiac') }}">#celiac</a> <a style="color:#E82C59" href="{{ url_for('show_recipes_tag', tag='diabetic') }}">#diabetic</a> <a style="color:#E82C59" href="{{ url_for('show_recipes_tag', tag='ketogenic') }}">#ketogenic</a> <a style="color:#E82C59" href="{{ url_for('show_recipes_tag', tag='lactose-free') }}">#lactose-free</a>
-                    <a style="color:#E82C59" href="{{ url_for('show_recipes_tag', tag='vegetarian') }}">#vegetarian</a> <a style="color:#E82C59" href="{{ url_for('show_recipes_tag', tag='vegan') }}">#vegan</a> <a style="color:#E82C59" href="{{ url_for('show_recipes_tag', tag='paleo') }}">#paleo</a>
-                    </p>
+                <a style="color:#E82C59" href="{{ url_for('show_recipes_adv', type='tags', value='celiac') }}">#celiac</a> <a style="color:#E82C59" href="{{ url_for('show_recipes_adv', type='tags', value='diabetic') }}">#diabetic</a> <a style="color:#E82C59" href="{{ url_for('show_recipes_adv', type='tags', value='ketogenic') }}">#ketogenic</a> <a style="color:#E82C59" href="{{ url_for('show_recipes_adv', type='tags', value='lactose-free') }}">#lactose-free</a>
+                    <a style="color:#E82C59" href="{{ url_for('show_recipes_adv', type='tags', value='vegetarian') }}">#vegetarian</a> <a style="color:#E82C59" href="{{ url_for('show_recipes_adv', type='tags', value='vegan') }}">#vegan</a> <a style="color:#E82C59" href="{{ url_for('show_recipes_adv', type='tags', value='paleo') }}">#paleo</a>
+                </p>
                 {% endif %}
             </div>
             <br>

@@ -30,7 +30,7 @@
     </tr>
      {% for item in rec.ingredients %}
     <tr>
-      <td>{{ item.ingredient }}</td><td>{{ item.number }}</td>
+      <td><a style="color:#777" href="{{ url_for('show_recipes_adv', type='ings', value=item.ingredient  ) }}">{{ item.ingredient }}</a></td><td>{{ item.number }}</td>
     </tr>
     {% endfor %}
 
@@ -38,7 +38,7 @@
 
  </table>
  {% if tags %}
- <br> <div class="highlight" ><pre><span class="s1">{{ tags }}</span></pre></div>
+ <br> <div class="highlight" ><pre><span class="s1">{% for item in rec.tags %}<a style="color:#E82C59" href="{{ url_for('show_recipes_adv', type='tags', value=item  ) }}">{{ item }}</a>,{% endfor %}</span></pre></div>
  {% endif %}
  <script>
 $(document).ready(function(){
