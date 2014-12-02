@@ -159,25 +159,36 @@ def pearson_sim_user(user1, user2):
     for item2 in user2['ratings']:
       if item1['itemid'] == item2['itemid']:
         mratings.append({'itemid': item1['itemid'], 'value1': item1['value'], 'value2': item2['value']})
-        continue
+
   # if are no common ratings
   if len(mratings) == 0: return 0.0
 
+  n = float(len(mratings))
+  sum1 = sum([it['value1'] for it in mratings])
+  sum2 = sum([it['value2'] for it in mratings])
 
-  #average ratings for users
-  avg1 = user1['avgrating']
-  avg2 = user2['avgrating']
-  den1 = 0.0
-  den2 = 0.0
-  sum1 = 0.0
-  for item in mratings:
-    sum1 += ((item['value1'] - avg1) * (item['value2'] - avg2))
-    den1 += (item['value1'] - avg1) ** 2
-    den2 += (item['value2'] - avg2) ** 2
-  den = (sqrt(den1)) * (sqrt(den2))
+  sum1sq = sum([pow(it['value1'], 2) for it in mratings])
+  sum2sq = sum([pow(it['value2'], 2) for it in mratings])
+
+  pSum = sum([it['value2']*it['value1'] for it in mratings])
+
+  num = pSum-(sum1*sum2/n)
+  den = math.sqrt((sum1sq-pow(sum1,2)/n)*(sum2sq-pow(sum2,2)/n))
+
+  print user1['ratings']
+  print user2['ratings']
+
+  print 'n:', n
+  print 'pSum:', pSum
+  print 'sum1:', sum1 , ' sum1sq:', sum1sq
+  print 'sum2:', sum2 , ' sum2sq:', sum2sq
+
+  print 'num:', num
+  print 'den:', den
+  print '-----'
   if den == 0.0:
     return 0.0
-  return sum1/den  #TODO: * 1/min(common items, threshold) OR just put constant in denominator
+  return num/den  #TODO: * 1/min(common items, threshold) OR just put constant in denominator
 
 #endregion
 
@@ -211,8 +222,8 @@ def content_based():
     userprofiletag = [value/float(len(gooditems)) for value in uservectortag]
     userprofileingredient = [{'key': key, 'value': useringredient[key]} for key in useringredient]
 
-    print userprofiletag
-    print userprofileingredient
+    #print userprofiletag
+    #print userprofileingredient
 
     # 5. predicting items, cos(user,item), we can use hybrid
     sim_array = []
@@ -222,7 +233,7 @@ def content_based():
         scoretag = cossim_tag_recipe_user(userprofiletag, get_recipe_tagvector(recipe))
         scoreing = cossim_ingred_recipe_user(userprofileingredient, recipe)
         score = scoretag + scoreing
-        print 'score = ', scoretag, '+', scoreing, ' =', score
+        #print 'score = ', scoretag, '+', scoreing, ' =', score
         sim_array.append({'itemid':recipe['_id'], 'value':score})
     newlist = sorted(sim_array, key=itemgetter('value'), reverse = True)
 
@@ -338,9 +349,9 @@ def sim_person(user1):
   sim_array = []
   for user2 in userscol.User.find():
     if user1['_id'] == user2['_id']: continue
-    sim_array.append({'userid':user2['_id'], 'value': cos_sim_user(user1, user2)})
+    sim_array.append({'userid':user2['_id'], 'value': pearson_sim_user(user1, user2)})
   newlist = sorted(sim_array, key=itemgetter('value'), reverse=True)
-
+  print newlist
   i = 0
   for item in newlist:
     user1['similar_users'].append({'userid': item['userid'], 'value': item['value']})
@@ -348,11 +359,12 @@ def sim_person(user1):
     i += 1
     if i == 7: return
 
-# this is cosine similarity between two users based on ratings
-#           x.y
-# cos  = ---------
-#         |x|.|y|
-def cos_sim_user(user1, user2):
+# this is euclidean distance score similarity between two users based on ratings
+#                                 1
+# euclidean distance  = -------------------------
+#                        1 + sqrt(sum((ai-bi)^2))
+# <0,1>: 0 - non sim, 1 - sim
+def euclid_sim_user(user1, user2):
   if user1['_id'] == user2['_id']: return 0.0 # should be 1.0 but we don't want to compute this
   if len(user1['ratings']) == 0 or len(user2['ratings']) == 0: return 0.0
 
@@ -365,25 +377,13 @@ def cos_sim_user(user1, user2):
 
   # if are no common ratings
   if len(mratings) == 0: return 0.0
-
-  numerator, pow1, pow2 = 0.0, 0.0, 0.0
-
-  for item in user1['ratings']:
-    pow1 = pow1 + (item['value'] * item['value'])
-
-  for item in user2['ratings']:
-    pow2 = pow2 + (item['value'] * item['value'])
-
-  denumerator = math.sqrt(pow1) * math.sqrt(pow2)
-
-  if denumerator == 0.0: return 0.0
-
-  for itemid in mratings:
-    rating1 = user1.getRating(itemid)
-    rating2 = user2.getRating(itemid)
-    numerator = numerator + (rating1 * rating2)
-
-  return numerator/denumerator
+  print user1['_id'],'-',user2['_id']
+  print user1['ratings']
+  print user2['ratings']
+  sum_of_squares = sum([pow(user1.getRating(itemid) - user2.getRating(itemid),2) for itemid in mratings])
+  print 1.0/(1.0 + math.sqrt(sum_of_squares))
+  print '---------'
+  return 1.0/(1.0 + math.sqrt(sum_of_squares))
 #endregion
 
 #region similar items
