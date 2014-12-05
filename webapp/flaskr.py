@@ -59,11 +59,16 @@ def show_profile(login):
   user = userscol.User.find_one({'_id': login})
   simpeople_ids = user['similar_users']
   simpeople = []
-  print login + '!!!!!!!!!!!!!!!!!!'
-  print simpeople_ids
+  i = 0
   for user_id in simpeople_ids:
-    if user_id['value'] > 0.7: #TODO pick the most similar only! + delete print
-      simpeople.append(userscol.User.find_one({'_id': user_id['userid']}))
+    simpeople.append(user_id['userid'])
+    i += 1
+    if i == 3: break
+    #simpeople.append(userscol.User.find_one({'_id': user_id['userid']}))
+
+  #for user_id in simpeople_ids:
+  #  if user_id['value'] > 0.7: #TODO pick the most similar only! + delete print
+  #    simpeople.append(userscol.User.find_one({'_id': user_id['userid']}))
   return render_template('show_profile.html', user=userscol.User.find_one({'_id': login}), simpeople=simpeople)
 
 @app.route('/login', methods=['GET', 'POST'])

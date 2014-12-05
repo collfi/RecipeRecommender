@@ -4,8 +4,8 @@ from mongokit import Connection
 import sys
 import math
 # i need to add this because of imports
-sys.path.append('/home/michal/Desktop/RECSYS/RecipeRecommender/')
-#sys.path.append('/home/collfi/RecSys/RecipeRecommender/')
+#sys.path.append('/home/michal/Desktop/RECSYS/RecipeRecommender/')
+sys.path.append('/home/collfi/RecSys/RecipeRecommender/')
 from sqlalchemy import and_
 from webapp.models import recommender
 from datetime import datetime
@@ -135,12 +135,15 @@ def collaborative_filtering():
           rating = user_b.getRating(r['_id'])
           if rating is None: continue
 
-          numerator += (pearson_sim_user(u, user_b) * (rating - user_b['avgrating']))
-          denominator += pearson_sim_user(u, user_b)
+          numerator += (b['value'] * (rating - user_b['avgrating']))
+          denominator += b['value']
+          #numerator += (pearson_sim_user(u, user_b) * (rating - user_b['avgrating']))
+          #denominator += pearson_sim_user(u, user_b)
 
-        if denominator == 0: continue
-          #predicted_rating = u['avgrating']
-          #pred.append({'itemid': r['_id'], 'value': predicted_rating})
+        # if user rate everything equally, pearson similarity will be 0, so we recommend user's average
+        if denominator == 0:
+          predicted_rating = u['avgrating']
+          pred.append({'itemid': r['_id'], 'value': predicted_rating})
         else:
           predicted_rating = u['avgrating'] + (numerator / denominator)
           pred.append({'itemid': r['_id'], 'value': predicted_rating})
@@ -349,7 +352,7 @@ def sim_person(user1):
   sim_array = []
   for user2 in userscol.User.find():
     if user1['_id'] == user2['_id']: continue
-    sim_array.append({'userid':user2['_id'], 'value': pearson_sim_user(user1, user2)})
+    sim_array.append({'userid': user2['_id'], 'value': pearson_sim_user(user1, user2)})
   newlist = sorted(sim_array, key=itemgetter('value'), reverse=True)
   print newlist
   i = 0
