@@ -245,18 +245,20 @@ def show_entry(id):
 
   # now show similar recipes
   simrecipes_ids = rec['similar_items']
-  simrecipes = []
-  for recipe_id in simrecipes_ids:
-    simrecipes.append(recipecol.Recipe.find_one({'_id':recipe_id['itemid']}))
-
-  print simrecipes_ids
+  simrecipes_t = []
+  simrecipes_i = []
+  for recipe_ in simrecipes_ids:
+    if recipe_['type'] == 1:
+      simrecipes_t.append(recipecol.Recipe.find_one({'_id':recipe_['itemid']}))
+    else:
+      simrecipes_i.append(recipecol.Recipe.find_one({'_id':recipe_['itemid']}))
 
   # if is users logged in recipe then he can edit it
   if user:
     favorited = True
   if rec['userid'] == session['user_in']:
     canedit = True
-  return render_template('show_entry.html', canedit=canedit, favorited=favorited, value=value, rec=rec, tags=tags, simrecipes=simrecipes)
+  return render_template('show_entry.html', canedit=canedit, favorited=favorited, value=value, rec=rec, tags=tags, simrecipes_t=simrecipes_t, simrecipes_i=simrecipes_i)
 #endregion
 
 #region recommendations

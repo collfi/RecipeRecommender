@@ -68,8 +68,8 @@ class Recipe(Document):
     'avgrating' : float,
     # interesting score by hacker news formula
     'interesting' : float,
-    # value is similarity
-    'similar_items' : [ {'itemid' : int, 'value' : float} ],
+    # value is similarity, type = 1tags, 2ingredients
+    'similar_items' : [ {'itemid' : int, 'value' : float, 'type' : int} ],
     # for how many people
     'serves' : int,
   }
@@ -626,7 +626,6 @@ def init_mongodbnew(mconnection):
   recipe17['ingredients'].append({'ingredient': u'lemon', 'number': u'2'})
   recipe17['ingredients'].append({'ingredient': u'garlic', 'number': u'10 cloves'})
   recipe17['ingredients'].append({'ingredient': u'milk', 'number': u'565 ml'})
-  recipe17['tags'].append(u'vegetarian')
   recipe17['tags'].append(u"meat")
   recipe17['tags'].append(u"dairy")
   recipe17['tags'].append(u"lunch")
@@ -792,6 +791,7 @@ def init_mongodbnew(mconnection):
   recipe22['tags'].append(u'breakfast')
   recipe22['tags'].append(u"vegetarian")
   recipe22['tags'].append(u"low-carb")
+  recipe22['tags'].append(u"gluten-free")
   recipe22['tags'].append(u"salty")
   recipe22['serves'] = 4
   recipe22.save()
@@ -898,6 +898,14 @@ def init_mongodbnew(mconnection):
   user2['fullname'] = u'Boris Valentovic'
   user2['email'] = u'collfijepan@gmail.com'
   user2['password'] = u'collfi'
+  user2['ratings'].append({'itemid':2,'value':4.0, 'date_creation': datetime.now()})
+  user2['ratings'].append({'itemid':9,'value':4.0, 'date_creation': datetime.now()})
+  user2['ratings'].append({'itemid':15,'value':5.0, 'date_creation': datetime.now()})
+  user2['ratings'].append({'itemid':16,'value':2.0, 'date_creation': datetime.now()})
+  user2['ratings'].append({'itemid':22,'value':3.0, 'date_creation': datetime.now()})
+  user2['ratings'].append({'itemid':7,'value':1.0, 'date_creation': datetime.now()})
+  user2['ratings'].append({'itemid':20,'value':1.0, 'date_creation': datetime.now()})
+  user2['ratings'].append({'itemid':6,'value':2.0, 'date_creation': datetime.now()})
   user2.save()
 
   user3 = userscol.User()
@@ -905,6 +913,11 @@ def init_mongodbnew(mconnection):
   user3['fullname'] = u'Michal Lukac'
   user3['email'] = u'cospelthetraceur@gmail.com'
   user3['password'] = u'cospel'
+  user3['ratings'].append({'itemid':4,'value':5.0, 'date_creation': datetime.now()})
+  user3['ratings'].append({'itemid':13,'value':4.0, 'date_creation': datetime.now()})
+  user3['ratings'].append({'itemid':25,'value':1.0, 'date_creation': datetime.now()})
+  user3['ratings'].append({'itemid':2,'value':4.0, 'date_creation': datetime.now()})
+  user3['ratings'].append({'itemid':2,'value':4.0, 'date_creation': datetime.now()})
   user3.save()
 
   user4 = userscol.User()
@@ -912,6 +925,12 @@ def init_mongodbnew(mconnection):
   user4['fullname'] = u'Jakub Kusnier'
   user4['email'] = u'qacer8@gmail.com'
   user4['password'] = u'qacer'
+  user4['ratings'].append({'itemid':1,'value':3.0, 'date_creation': datetime.now()})
+  user4['ratings'].append({'itemid':3,'value':5.0, 'date_creation': datetime.now()})
+  user4['ratings'].append({'itemid':7,'value':3.0, 'date_creation': datetime.now()})
+  user4['ratings'].append({'itemid':13,'value':4.0, 'date_creation': datetime.now()})
+  user4['ratings'].append({'itemid':19,'value':2.0, 'date_creation': datetime.now()})
+  user4['ratings'].append({'itemid':25,'value':4.0, 'date_creation': datetime.now()})
   user4.save()
 
   user5 = userscol.User()
@@ -919,6 +938,12 @@ def init_mongodbnew(mconnection):
   user5['fullname'] = u'Filip Bu'
   user5['email'] = u'filip@bu.sk'
   user5['password'] = u'filip'
+  user5['ratings'].append({'itemid':7,'value':5.0, 'date_creation': datetime.now()})
+  user5['ratings'].append({'itemid':11,'value':4.0, 'date_creation': datetime.now()})
+  user5['ratings'].append({'itemid':1,'value':4.5, 'date_creation': datetime.now()})
+  user5['ratings'].append({'itemid':3,'value':4.0, 'date_creation': datetime.now()})
+  user5['ratings'].append({'itemid':20,'value':5.0, 'date_creation': datetime.now()})
+  user5['ratings'].append({'itemid':16,'value':1.0, 'date_creation': datetime.now()})
   user5.save()
 
   user6 = userscol.User()

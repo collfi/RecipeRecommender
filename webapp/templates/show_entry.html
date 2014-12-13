@@ -114,8 +114,13 @@ $(document).ready(function(){
     <tr>
         <th>Name</th>
     </tr>
-    {% for recipe in simrecipes %}
+    {% for recipe in simrecipes_t %}
     <tr>
+        <td><a href="{{ url_for('show_entry', id=recipe._id) }}">{{ recipe.title }}</a></td>
+    </tr>
+    {% endfor %}
+    {% for recipe in simrecipes_i %}
+    <tr style="background-color:#F0F0F0">
         <td><a href="{{ url_for('show_entry', id=recipe._id) }}">{{ recipe.title }}</a></td>
     </tr>
     {% endfor %}
