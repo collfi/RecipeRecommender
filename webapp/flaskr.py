@@ -1,6 +1,6 @@
 # The recommender system: The CookBook
 # authors : Michal Lukac, Boris Valentovic
-
+from random import randint
 from mongokit import Connection
 from flask import Flask, request, session, flash, redirect, url_for, render_template, make_response
 from sqlalchemy import and_, or_
@@ -282,7 +282,16 @@ def recommend(login):
   user = userscol.User.find_one({'_id':login})
   values = [predict['itemid'] for predict in user['predicted']]
   entries = recipecol.Recipe.find({'_id': {'$in': values}})
-  if entries == None: entries = []
+  print "recommended11111"
+  # if there is no recommended recipes, get some random
+  print entries.count()
+  if entries.count() == 0:
+    entries = []
+    print "recommended 2"
+    count = recipecol.Recipe.find().count()
+    for i in range(1,6):
+      recipe = randint(1,count)
+      entries.append(recipecol.Recipe.find_one({'_id': recipe}))
   return render_template('show_entries.html', entries=entries, headline="Recommended for you")
 
 @app.route('/interesting', methods=['GET'])
