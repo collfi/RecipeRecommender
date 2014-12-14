@@ -4,8 +4,10 @@ from mongokit import Connection
 import sys
 import math
 # i need to add this because of imports
-#sys.path.append('/home/michal/Desktop/RECSYS/RecipeRecommender/')
+sys.path.append('/home/michal/Desktop/RECSYS/RecipeRecommender/')
 sys.path.append('/home/collfi/RecSys/RecipeRecommender/')
+sys.path.append('../')
+
 from sqlalchemy import and_
 from webapp.models import recommender
 from datetime import datetime
@@ -392,8 +394,8 @@ def euclid_sim_user(user1, user2):
 #region similar items
 def similar_items():
   for item1 in recipecol.Recipe.find():
-    sim_item_tags(item1)
     sim_item_ingredients(item1)
+    sim_item_tags(item1)
     #print('-----')
 
 # compute similiar items for item through tag
@@ -406,9 +408,10 @@ def sim_item_tags(item1):
 
   i = 0
   for item in newlist:
-    item1['similar_items'].append({'itemid': item['itemid'], 'value': item['value']})
-    item1.save()
-    i += 1
+    if not filter(lambda simitem: simitem['itemid'] == item['itemid'], item1['similar_items']):
+      item1['similar_items'].append({'itemid': item['itemid'], 'value': item['value'], 'type' : 1})
+      item1.save()
+      i += 1
     if i == 2: return
 
 # compute similiar items for item through the tf-idf with ingredients
@@ -423,7 +426,7 @@ def sim_item_ingredients(item1):
   for item in newlist:
     # if the item was not previously added through tag similarity
     if not filter(lambda simitem: simitem['itemid'] == item['itemid'], item1['similar_items']):
-      item1['similar_items'].append({'itemid': item['itemid'], 'value': item['value']})
+      item1['similar_items'].append({'itemid': item['itemid'], 'value': item['value'], 'type' : 2})
       item1.save()
       i += 1
     if i == 2: return
